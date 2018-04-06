@@ -201,43 +201,56 @@ export class SessionDetails extends Component {
     if (this.state.userObj) {
       const attendeeId = this.state.userObj.uid;
       Service.getDocRef(REGISTRATION_RESPONSE_TABLE)
-        //.where("sessionId", "==", this.state.sessionDetails.key)
+        .where("sessionId", "==", this.state.sessionDetails.key)
         .where("attendeeId", "==", attendeeId)
-        .onSnapshot((snapshot) => {
+        .onSnapshot(function (snapshot) {
           if (snapshot.size > 0) {
             snapshot.forEach((doc) => {
               let regResponse = doc.data();
-              let start = Moment(regResponse.session.startTime).format();
-              let end = Moment(regResponse.session.endTime).format();
-              if(regResponse.sessionId == baseObj.state.sessionDetails.key){
                 baseObj.setState({
                   regStatus: regResponse.status,
                   regId: doc.id
                 })
-              }
-              else if(baseObj.state.currentSessionStart <= start   && end <= baseObj.state.currentSessionEnd && regResponse.sessionId != baseObj.state.sessionDetails.sessionId ) {
-                baseObj.setState({
-                  sameTimeRegistration : true
-                })
-              }
-              else{
-                baseObj.setState({
-                  regStatus: "",
-                  regId: ""
-                })
-              }   
             });
           }
           else{
-            baseObj.setState({
-              regStatus: "",
-              regId: ""
-            })
+            this.checkAlreadyRegistered();
           }
+        },function (error){
+          console.log("error", error);
         });
     } else {
       console.warn("User object is undefined");
     }
+  }
+
+  checkAlreadyRegistered = () => {
+    const attendeeId = this.state.userObj.uid;
+    let baseObj = this;
+    Service.getDocRef(REGISTRATION_RESPONSE_TABLE)
+      .where("attendeeId", "==", attendeeId)
+      .get()
+      .then((snapshot) => {
+          snapshot.forEach(doc => {
+            let RegSession = doc.data();
+            let start = Moment(RegSession.session.startTime).format();
+            let end = Moment(RegSession.session.endTime).format();
+            if ( baseObj.state.currentSessionStart <= start && end <= baseObj.state.currentSessionEnd && RegSession.sessionId !== baseObj.state.sessionId) {
+              baseObj.setState({
+                sameTimeRegistration: true
+              });
+            }
+            else {
+              baseObj.setState({
+                regStatus: "",
+                regId: ""
+              })
+            }
+          })  
+      })
+      .catch((error) => {
+        console.log("error",error);
+      })
   }
   render() {
     const speakers = this.getSpeakers();

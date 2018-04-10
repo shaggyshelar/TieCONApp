@@ -6,6 +6,7 @@ import { NavigationActions } from 'react-navigation';
 import { PieChart } from 'react-native-svg-charts';
 import firebase from '../../../config/firebase';
 import {GradientButton} from '../../../components/gradientButton';
+import Moment from 'moment';
 
 var firestoreDB = firebase.firestore();
 
@@ -22,7 +23,11 @@ export default class PollSession extends React.Component {
             negativeResponse: "",
             showGraph: false,
             feedBackGiver: "",
-            showPoll : false
+            showPoll : false,
+            session : this.sessionDetails,
+            sessionTimeOut : false,
+            noNegative:false,
+            noPositive :false
         }
     }
     componentWillMount() {
@@ -31,14 +36,37 @@ export default class PollSession extends React.Component {
             let user = JSON.parse(userDetails)
             thisRef.setState({
                 feedBackGiver: user
-            })  
-            thisRef.checkPollResponse();
+            })
+            //thisRef.checkSessionTime();
+           // thisRef.checkPollResponse();
         })
         .catch(err => {
             console.warn('Errors', err);
         });  
     }
-
+    checkSessionTime = () => {
+        let session = this.state.session;
+        let today = Moment(new Date()).format();
+        let sessionStart = Moment(session.startTime).format();
+        let sessionEnd = Moment(session.endTime).format();
+        let buffered = Moment(sessionEnd).add(2, 'hours');
+        let bufferedEnd = Moment(buffered).format();
+        if (sessionStart <= today && today <= bufferedEnd) {
+            this.setState({
+                sessionTimeOut: false
+            })
+            console.log("yes time");
+            this.checkPollResponse()
+        }
+        else {
+            this.setState({
+                sessionTimeOut: true,
+                showGraph : true
+            })
+            this.getSessionPollOverview();
+            console.log("no time");
+        }
+    }
     checkPollResponse = () =>{
         let thisRef = this;
         let sessionId = this.state.sessionId;
@@ -72,9 +100,16 @@ export default class PollSession extends React.Component {
                 getPositiveCount = getPositiveCount.where("Response", "==" , fItem)
                 getPositiveCount = getPositiveCount.where("sessionId" ,"==" , sessionId)
                 getPositiveCount.get().then(function(docRef){
-                    thisRef.setState({
-                        positiveResponse : docRef.docs.length
-                    })
+                    if(docRef.docs.length > 0){
+                        thisRef.setState({
+                            positiveResponse : docRef.docs.length
+                        })
+                    }
+                    else{
+                        thisRef.setState({
+                            noPositive : true
+                        })
+                    } 
                 })
                 .catch( function ( error){
                     console.log("error", error);
@@ -85,9 +120,16 @@ export default class PollSession extends React.Component {
                 getNegativeCount = getNegativeCount.where("Response", "==" , fItem)
                 getNegativeCount = getNegativeCount.where("sessionId" ,"==" , sessionId)
                 getNegativeCount.get().then(function(docRef){
-                    thisRef.setState({
-                        negativeResponse : docRef.docs.length
-                    })
+                    if(docRef.docs.length > 0){
+                        thisRef.setState({
+                            negativeResponse : docRef.docs.length
+                        })
+                    }
+                    else{
+                        thisRef.setState({
+                            noNegative : true
+                        })
+                    }
                 })
                 .catch( function ( error){
                     console.log("error", error);
@@ -142,7 +184,7 @@ export default class PollSession extends React.Component {
                 svg: { fill: 'red' }
             }
         ]
-        if(this.state.showGraph == false && this.state.showPoll == true){
+        if(this.state.showGraph == false && this.state.showPoll == true && this.state.sessionTimeOut == false && this.state.noNegative == false && this.state.noPositive == false){
             return (
                 <View style={{marginTop : 5 , marginLeft : 10}}>
                     <Text>{this.state.question}</Text>
@@ -174,7 +216,7 @@ export default class PollSession extends React.Component {
     
             );
         }
-        else if(this.state.showGraph == true && this.state.showPoll == false){
+        else if(this.state.showGraph == true && this.state.showPoll == false &&  this.state.sessionTimeOut == true  && this.state.noNegative == false && this.state.noPositive == false){
             return(
                 <View style={{marginTop : 5 , marginLeft : 10}}>
                     <Text style={{fontSize : 15}}>FeedBack Overview</Text>
@@ -208,10 +250,17 @@ export default class PollSession extends React.Component {
             );
             
         }
-        else{
+        else if(this.state.noNegative == true && this.state.noPositive == true){
             return(
                 <View style={[styles.loading]} > 
-                <ActivityIndicator size='large' /> 
+                    <Text>No resposnses yet</Text>
+              </View>
+            );
+        }
+        else{
+            return(
+                <View> 
+                <Text>No questions available for this session !!!</Text>
               </View>
             );
            

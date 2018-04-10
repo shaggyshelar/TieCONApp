@@ -23,6 +23,7 @@ export class Survey extends RkComponent {
             responses : [],
             queArray : [],
            sessionId : this.props.navigation.state.params.sessionDetails.key,
+           session :this.props.navigation.state.params.sessionDetails
         }
         this.onFormSelectValue = this.onFormSelectValue.bind(this);
         this.onMultiChoiceChange = this.onMultiChoiceChange.bind(this);
@@ -43,10 +44,15 @@ export class Survey extends RkComponent {
     getForm = () => {
         let thisRef = this;
         firestoreDB.collection("QuestionsForm").doc("feedbackForm").get().then(function (doc) {
-            let form = doc.data();
-            thisRef.setState({
-                questionsForm: form.Questions
-            })
+            if( doc.data()  == undefined){
+                thisRef.props.navigation.goBack();
+            }
+            else{
+                let form = doc.data();
+                thisRef.setState({
+                    questionsForm: form.Questions
+                })
+           }
         }).catch(function (error) {
             console.log("Error getting document:", error);
         });
@@ -65,7 +71,7 @@ export class Survey extends RkComponent {
             Alert.alert("Please fill all the fields");
         }
         else {
-            let thisRef = this;
+             let thisRef = this;
             firestoreDB.collection('SessionSurvey').add({
                 Responses: thisRef.state.queArray,
                 ResponseBy: thisRef.state.user.uid,
@@ -78,6 +84,8 @@ export class Survey extends RkComponent {
                         responses : [],
                         queArray : [],
                     })
+                    thisRef.props.navigation.pop();
+                    thisRef.props.navigation.navigate('SessionDetails',{session : thisRef.state.session});
                 })
                 .catch(function (error) {
                     console.error("Error adding document: ", error);

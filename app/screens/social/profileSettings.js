@@ -175,7 +175,7 @@ export class ProfileSettings extends React.Component {
 
           <View style={styles.section}>
             <View style={[styles.row, styles.heading]}>
-              <RkText rkType='header6 primary'>Linked In Details</RkText>
+              <RkText rkType='header6 primary'>Linkedin Details</RkText>
             </View>
             <View style={styles.row}>
               <RkTextInput label='Summary'

@@ -17,7 +17,28 @@ export default class ScheduleTile extends RkComponent {
     constructor(props) {
         super(props);
         this.styles = styleConstructor();
-        this.state = props;
+        let __props = this.props;
+        __props.session.displayColor = '#ffffff';
+        switch(__props.session.sessionType){
+            case 'break': {
+                __props.session.displayColor = 'gray';
+                break;
+            }
+            case 'keynote' : 
+                __props.session.displayColor = 'green';
+                break;
+            case 'deepdive' : 
+                __props.session.displayColor = 'orange';
+                break;
+            case 'panel' :
+                __props.session.displayColor = 'purple';
+                break;
+            case 'breakout' : 
+                __props.session.displayColor = 'blue';
+                break;
+        }
+        this.state = __props;
+        
     }
     /**
      *  Get Speaker Details
@@ -235,7 +256,7 @@ export default class ScheduleTile extends RkComponent {
                   <TouchableOpacity disabled={this.props.session.isBreak}
                             onPress={() => this.props.navigation.navigate('SessionDetails', { session: this.props.session })}
                   >
-                  <RkCard rkType='shadowed' style={this.styles.card}>
+                  <RkCard rkType='shadowed' style={[this.styles.card, {borderLeftColor : this.props.session.displayColor}]}>
                     <View style={this.styles.header}>
                         <View style={this.styles.mainHeader}>
                             {this.applyTouchOpacity(this.props.session.isBreak)}

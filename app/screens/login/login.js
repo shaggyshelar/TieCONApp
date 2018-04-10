@@ -106,7 +106,7 @@ export class LoginV2 extends React.Component {
           </View>
           <View style={styles.buttons}>
             <RkButton style={styles.button} rkType='sponsors' style={{marginTop: 5}}>
-              <Image style={styles.image} source={require('../../assets/images/eternusLogoNew.png')}/>;
+              <Image style={styles.eternusLogo} source={require('../../assets/images/eternusLogoMain.png')}/>;
             </RkButton>
             {/* <RkButton style={styles.button} rkType='sponsors' style={{marginTop: 5}}>
               <Image style={styles.image} source={require('../../assets/images/bajajLogo.jpg')}/>;
@@ -131,8 +131,8 @@ let styles = RkStyleSheet.create(theme => ({
     backgroundColor: theme.colors.screen.base
   },
   image: {
-    height: scaleVertical(77),
-    resizeMode: 'contain'
+    //height: scaleVertical(77),
+    //resizeMode: 'contain'
   },
   header: {
     paddingBottom: scaleVertical(10),
@@ -181,5 +181,12 @@ let styles = RkStyleSheet.create(theme => ({
   },
   loginHeader:{
     marginBottom: 20,
+  },
+  eternusLogo:{
+   // width: 150,
+    //height:25
+
+    height: scaleVertical(25),
+    resizeMode: 'contain'
   }
 }));

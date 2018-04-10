@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,Text} from 'react-native';
+import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,Text} from 'react-native';
 import { RkText,RkComponent, RkTextInput, RkAvoidKeyboard, RkTheme, RkStyleSheet } from 'react-native-ui-kitten';
 import {data} from '../../../data';
 import {Avatar} from '../../../components';
@@ -26,8 +26,10 @@ export class AttendeeProfile extends RkComponent {
         if (this.state.pictureUrl) {
             avatar = <Avatar  rkType='big'  imagePath={this.state.pictureUrl} />
         } else {
-            let firstLetter = this.state.speaker.firstName ?  this.state.speaker.firstName[0]: '?';
-            avatar = <RkText rkType='big'  style={styles.avatar}>{firstLetter}</RkText>
+            //let firstLetter = this.state.speaker.firstName ?  this.state.speaker.firstName[0]: '?';
+            //avatar = <RkText rkType='big'  style={styles.avatar}>{firstLetter}</RkText>
+
+            avatar = <Image style={{width: 100,height: 100, marginLeft:'auto', marginRight:'auto'}} source={require('../../../assets/images/defaultUserImg.png')}/>
         }
         return (
             <ScrollView>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform,Text, Button, View, TouchableOpacity, StyleSheet, AsyncStorage, ScrollView,ActivityIndicator,Alert } from 'react-native';
+import { Image,Platform,Text, Button, View, TouchableOpacity, StyleSheet, AsyncStorage, ScrollView,ActivityIndicator,Alert } from 'react-native';
 import { RkButton, RkStyleSheet, RkText, RkCard } from 'react-native-ui-kitten';
 import { Icon, Container, Tabs, Tab, TabHeading } from 'native-base';
 import { NavigationActions, TabNavigator, TabView } from 'react-navigation';
@@ -115,8 +115,10 @@ export class SessionDetails extends Component {
         if (speaker.profileImageURL) {
           avatar = <Avatar rkType='small' style={{width: 44,height: 44,borderRadius: 20}} imagePath={speaker.profileImageURL} />
         } else {
-          let firstLetter = speaker.firstName ? speaker.firstName[0] : '?';
-          avatar = <RkText rkType='small' style={styles.avatar}>{firstLetter}</RkText>
+          //let firstLetter = speaker.firstName ? speaker.firstName[0] : '?';
+          //avatar = <RkText rkType='small' style={styles.avatar}>{firstLetter}</RkText>
+         // avatar = <Avatar rkType='small' style={{width: 44,height: 44,borderRadius: 20}} imagePath={require('../../../assets/images/defaultUserImg.png')} />
+          avatar = <Image style={{width: 44,height: 44,borderRadius: 20}} source={require('../../../assets/images/defaultUserImg.png')}/>
         }
         return (
           <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker,speakersId : this.state.speakers})}>

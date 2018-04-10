@@ -6,7 +6,8 @@ export default function styleConstructor() {
         card: {
             margin: 1,
             padding: 4,
-            height : 75
+            height : 75,
+            borderLeftWidth: 2,
         },
         header: {
             flex: 1,

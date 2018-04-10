@@ -56,17 +56,20 @@ export class QRScanner extends React.Component {
       querySnapshot.forEach(function (doc) {
         let sessionData = doc.data();
         sessionData['id'] = doc.id;
-        sessions.push(sessionData);
+        if(!sessionData.isBreak) {
+          sessionData['eventName'] = sessionData.eventName + '(' + sessionData.room + ')';
+          sessions.push(sessionData);
+        }
       });
       if (sessions.length > 0) {
         thisRef.setState({ sessions, selectedSession: sessions[0].id });
-        AsyncStorage.setItem("SESSIONS", JSON.stringify(sessions));
+        AsyncStorage.setItem("QR_SESSIONS", JSON.stringify(sessions));
         thisRef._getCurrentSessionUsers(sessions[0].id);
       } else {
-        thisRef.setState({ error: 'No sessions found.', isLoading: false });
+        thisRef.setState({ error: 'No sessions configured on server. Please contact administrator.', isLoading: false });
       }
     }).catch(function (error) {
-      thisRef.setState({ error: 'Error getting Sessions.', isLoading: false })
+      thisRef.setState({ error: 'Error getting Sessions from server. Please contact adminstrator.', isLoading: false })
       Alert.alert(
         'Error',
         'Unable to get sessions information. Please try again.',
@@ -80,7 +83,7 @@ export class QRScanner extends React.Component {
 
   _getSessions() {
     let thisRef = this;
-    AsyncStorage.getItem("SESSIONS").then((sessions) => {
+    AsyncStorage.getItem("QR_SESSIONS").then((sessions) => {
       if (sessions != null){
         let sessionsObj = JSON.parse(sessions);
         thisRef.setState({ sessions: sessionsObj, selectedSession: sessionsObj[0].id });
@@ -268,7 +271,7 @@ export class QRScanner extends React.Component {
       thisRef.setState({ isLoading: false });
       Alert.alert(
         'Error',
-        'Unable to get selected session users. Please try again.',
+        'Unable to get users for selected session. Please try again.',
         [
           { text: 'Ok', onPress: () => { } },
         ],
@@ -305,6 +308,12 @@ export class QRScanner extends React.Component {
               The Internet connection appears to be offline.
             </RkText>
           );
+        } else if(this.state.error) {
+          return (
+            <RkText>
+              {this.state.error}
+            </RkText>
+          );
         } else {
           return (
             <BarCodeScanner
@@ -322,7 +331,7 @@ export class QRScanner extends React.Component {
   }
 
   renderSessionDropdown = () => {
-    if(this.state.isOffline) {
+    if(this.state.isOffline || this.state.error) {
       return null;
     }
 

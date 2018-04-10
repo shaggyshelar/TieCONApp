@@ -10,7 +10,7 @@ import {bootstrap} from './config/bootstrap';
 import track from './config/analytics';
 import {data} from './data'
 import {AppLoading, Font} from 'expo';
-import {View, Text, Alert, AsyncStorage} from "react-native";
+import {View, Text, Alert, AsyncStorage, Platform} from "react-native";
 import { Permissions, Notifications } from 'expo';
 import firebase, {firestoreDB} from './config/firebase';
 
@@ -82,6 +82,7 @@ async function registerForPushNotificationsAsync() {
           userId: userObject.uid,
           roleName: userObject.roleName,
           isLoggedIn: true,
+          platform: Platform.OS,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true })
         .then((docRef) => {
@@ -94,6 +95,7 @@ async function registerForPushNotificationsAsync() {
           userId: '',
           roleName: '',
           isLoggedIn: false,
+          platform: Platform.OS,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true })
         .then((docRef) => {

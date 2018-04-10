@@ -1,6 +1,6 @@
 import React from 'react';
-import { RkText} from 'react-native-ui-kitten';
-
+import { RkStyleSheet, RkText } from 'react-native-ui-kitten';
+import { Text, View, Container } from 'native-base';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -12,7 +12,7 @@ function renderIf(condition, content) {
 
 export class HelpDesk extends React.Component {
   static navigationOptions = {
-    title: 'About Tie'.toUpperCase()
+    title: 'Help Desk'.toUpperCase()
   };
 
   constructor(props) {
@@ -24,6 +24,19 @@ export class HelpDesk extends React.Component {
   }
 
   render() {
-    return (<RkText>Coming Soon</RkText>);
+    return (
+      <Container style={[styles.root]}>
+          <View>
+              {/* {speakerTile} */}
+              <Text style={{fontSize :20}}>Coming Soon</Text>
+          </View>
+      </Container>
+    )
   }
 }
+
+let styles = RkStyleSheet.create(theme => ({
+  root: {
+      backgroundColor: theme.colors.screen.base
+  }
+}));

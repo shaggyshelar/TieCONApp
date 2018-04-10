@@ -15,14 +15,14 @@ export class SpeakerDetailsTabs extends React.Component {
       <Tabs style={{ elevation: 3 }} style={styles.tabContent}>
         <Tab
           heading={
-            <TabHeading style={{ backgroundColor: '#ed1b24' }} ><Icon style={[styles.textColor]} name="ios-people" /><Text style={[styles.textColor]} >Profile</Text></TabHeading>
+            <TabHeading style={{ backgroundColor: '#fff' }} ><Icon style={[styles.textColor]} name="ios-people" /><Text style={[styles.textColor]} >Profile</Text></TabHeading>
           }
         >
           <AttendeeProfile navigation={this.props.navigation} />
         </Tab>
         <Tab
           heading={
-            <TabHeading style={{ backgroundColor: '#ed1b24' }}><Icon style={[styles.textColor]} name="calendar" /><Text style={[styles.textColor]} >Sessions</Text></TabHeading>
+            <TabHeading style={{ backgroundColor: '#fff' }}><Icon style={[styles.textColor]} name="calendar" /><Text style={[styles.textColor]} >Sessions</Text></TabHeading>
           }
         >
           <SpeakerSessionList navigation={this.props.navigation} />
@@ -40,7 +40,7 @@ let styles = RkStyleSheet.create(theme => ({
   tabContent: {
     backgroundColor: 'red',
   },
-  textColor: {
-    color: Platform.OS === 'ios' ? 'white' : 'white'
+  textColor: {    
+    color: '#ed1b24'
   }
 }));

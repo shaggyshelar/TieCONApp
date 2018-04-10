@@ -31,7 +31,7 @@ export class Questions extends React.Component {
     }
     getForm = () => {
         let thisRef = this;
-        firestoreDB.collection("QuestionsForm").doc("fzEbwY1XHROtpw7HF8du").get().then(function (doc) {
+        firestoreDB.collection("QuestionsForm").doc("landingQuestions").get().then(function (doc) {
             let form = doc.data();
             thisRef.setState({
                 questionsForm: form.Questions

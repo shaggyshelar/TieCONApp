@@ -137,7 +137,12 @@ export class ProfileSettings extends React.Component {
       <ScrollView style={styles.root}>
         <RkAvoidKeyboard>
           <View style={styles.header}>
-            <Avatar imagePath={this.state.pictureUrl} rkType='big'/>
+            {renderIf(this.state.pictureUrl == 'https://randomuser.me/api/portraits/men/49.jpg',
+              <Avatar img={require('../../assets/images/defaultUserImg.png')} rkType='big'/>
+            )}
+            {renderIf(this.state.pictureUrl != 'https://randomuser.me/api/portraits/men/49.jpg',
+              <Avatar imagePath={this.state.pictureUrl} rkType='big'/>
+            )}
           </View>
           <View style={styles.section}>
             <View style={[styles.row, styles.heading]}>

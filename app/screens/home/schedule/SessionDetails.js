@@ -72,6 +72,14 @@ export class SessionDetails extends Component {
         console.log("err", err);
       });
   }
+
+  onSurvey= ()=> {
+    if(this.state.sessionDetails.startTime.getTime() < (new Date()).getTime()){
+      this.props.navigation.navigate('Survey', { sessionDetails: this.state.sessionDetails });
+    }else{
+      Alert.alert("Its too early to give feedback for this session");
+    }
+  }
   getSurveyAccess = () => {
     if (this.state.showPanelButton == true && this.state.showFeedbackButton == true) {
       return (
@@ -83,7 +91,7 @@ export class SessionDetails extends Component {
           </View>
           <View style={{  width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
             <GradientButton colors={['#f20505', '#f55050']} text='Feedback' style={{  width: Platform.OS === 'ios' ? 150 :170 ,alignSelf : 'center'}}
-              onPress={() => this.props.navigation.navigate('Survey', { sessionDetails: this.state.sessionDetails })}
+              onPress={this.onSurvey}
             />
           </View>
         </View>

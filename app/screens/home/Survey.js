@@ -42,7 +42,7 @@ export class Survey extends RkComponent {
     }
     getForm = () => {
         let thisRef = this;
-        firestoreDB.collection("QuestionsForm").doc("oQwNtp86Zxlu1JFkFhwg").get().then(function (doc) {
+        firestoreDB.collection("QuestionsForm").doc("feedbackForm").get().then(function (doc) {
             let form = doc.data();
             thisRef.setState({
                 questionsForm: form.Questions

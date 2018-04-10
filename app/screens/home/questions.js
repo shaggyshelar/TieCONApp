@@ -32,25 +32,41 @@ export class Questions extends React.Component {
     getForm = () => {
         let thisRef = this;
         firestoreDB.collection("QuestionsForm").doc("landingQuestions").get().then(function (doc) {
-            let form = doc.data();
-            thisRef.setState({
-                questionsForm: form.Questions
-            })
+            if( doc.data()  == undefined){
+                thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
+            }
+            else{
+                let form = doc.data();
+                thisRef.setState({
+                    questionsForm: form.Questions
+                })
+           }
         }).catch(function (error) {
             console.log("Error getting document:", error);
         });
     }
+
+    resetNavigation =(navigation, targetRoute) => {
+        const resetAction = NavigationActions.reset({
+          index: 0,
+          actions: [
+            NavigationActions.navigate({ routeName: targetRoute, params:{ showHome : true }}),
+          ],
+        });
+        this.props.navigation.dispatch(resetAction);
+    }
+
     onSubmitResponse = () => {
-        let blackResponse = false;
+        let blankResponse = false;
         this.state.queArray.forEach(fItem => {
             if (fItem.Answer.size >= 1){
                 fItem.Answer = Array.from(fItem.Answer);
             }
             if(fItem.Answer == "" || fItem.Answer.size == 0){
-                blackResponse = true;
+                blankResponse = true;
             }
         });
-        if(blackResponse == true){
+        if(blankResponse == true){
             Alert.alert("Please fill all the fields");
         }
         else{
@@ -62,8 +78,7 @@ export class Questions extends React.Component {
             })
             .then(function (docRef) {
                 Alert.alert("Thanks for your response");
-                thisRef.navigation.navigate('HomeMenu');
-                
+                thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
             })
             .catch(function (error) {
                 console.error("Error adding document: ", error);
@@ -78,7 +93,7 @@ export class Questions extends React.Component {
                         <Label style={{ flexDirection: 'row', fontFamily: RkTheme.current.fonts.family.regular, alignItems: 'center', marginTop: 3, marginBottom: 2, fontSize: 14 }}>{Fitem.QuestionTitle}</Label>
                         {this.renderAnswerField(Fitem)}
                     </View>
-            )
+            );
         });
         return  renderQuestions;
     }

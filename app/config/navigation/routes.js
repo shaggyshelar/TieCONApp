@@ -38,12 +38,15 @@ export class HomePageMenuScreen extends React.Component {
       });
   };
 
-  constructor(){
-    super()
+  constructor(props){
+    super(props)
+    let params  = this.props.navigation.state.params || {};
+    let show = params.showHome || false;
     this.state = {
         showQuestions : false,
         showHomepage : false,
-        userId : ""
+        userId : "",
+        showHome : show
     }
   }
   componentWillMount(){
@@ -52,7 +55,15 @@ export class HomePageMenuScreen extends React.Component {
       this.setState({
         userId : Uid
       })
-      this.getQuestionsData(Uid);
+      if(this.state.showHome == false){
+        this.getQuestionsData(Uid);
+      }
+      else{
+        this.setState({
+          showQuestions : false,
+          showHomepage : true
+        })
+      }
     });
 }
 getQuestionsData = (Uid) =>{

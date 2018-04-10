@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, Platform} from 'react-native';
+import {ScrollView, Platform,Image} from 'react-native';
 import { Text, View, Icon, Container, Label } from 'native-base';
 import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Alert, AsyncStorage ,ActivityIndicator} from 'react-native';
 import { RkComponent, RkTheme,RkStyleSheet, RkText, RkAvoidKeyboard, RkButton, RkCard, RkChoice, RkTextInput, RkChoiceGroup } from 'react-native-ui-kitten';
@@ -32,39 +32,50 @@ export class Speakers extends RkComponent {
         .get()
         .then(function (doc) {
            doc.forEach(fItem => {
-               fItem.data().profileServices.forEach(tItem =>{
-                   if(tItem == 'Speaker'){
-                       speakerCollection.push(fItem.data());
-                   }
-               })
+               let itemData = fItem.data();
+               let itemId = fItem.id;
+               if(itemData.profileServices != undefined){
+                itemData.profileServices.forEach(tItem =>{
+                    if(tItem == 'Speaker'){
+                        speakerCollection.push({speakerData : itemData, speakerId : itemId});
+                    }
+                })
+               }
            })
           thisRef.setState({
               Speakers : speakerCollection,
               isLoaded : true
           })
-        //   thisRef.displaySpeakers();
+          thisRef.displaySpeakers();
         })
         .catch(function (error){
             console.log("error",error);
         });
     }
     displaySpeakers = () => {
-     return this.state.Speakers.map(speaker => {
+     return this.state.Speakers.map((speaker,index )=> {
         let avatar;
-        if (speaker.profileImageURL) {
-          avatar = <Avatar rkType='small' style={{width: 44,height: 44,borderRadius: 20}} imagePath={speaker.profileImageURL} />
+        if (speaker.speakerData.profileImageURL) {
+          avatar = <Avatar rkType='small' style={{width: 44,height: 44,borderRadius: 26}} imagePath={speaker.speakerData.profileImageURL} />
         } else {
-          let firstLetter = speaker.firstName ? speaker.firstName[0] : '?';
-          avatar = <RkText rkType='small' style={styles.avatar}>{firstLetter}</RkText>
+          avatar = <Image style={{width: 36,height: 36,borderRadius: 26}} source={require('../../assets/images/defaultUserImg.png')}/>
         }
          return(
             <TouchableOpacity
-            //onPress={() => this.props.navigation.navigate('SessionDetails', { session: session })}
+             key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker.speakerData , speakersId :[speaker.speakerId] })}
         >
             <RkCard rkType='shadowed' style={styles.card}>
-                <View style={styles.header}>
-                    {avatar}
-                    <Text style={styles.headerText}>{speaker.fullName}</Text>
+            <View style={{flexDirection : 'row' }}>
+                <View style={{flexDirection : 'column' , alignItems : 'flex-start', marginVertical : 10 , marginLeft : 5,width : 50 ,flex : 1}}>
+                     {avatar}
+                </View>
+                <View style={{flexDirection : 'column' ,marginVertical : 10 , flex:2 }}>
+                    <Text style={styles.headerText}>{speaker.speakerData.fullName}</Text>
+                    <Text style={styles.infoText}>{speaker.speakerData.briefInfo}</Text>
+                </View >
+                <View style={{flexDirection : 'column', alignContent : 'flex-end', marginRight: 5,marginVertical : 15 , flex:3}}>
+                <RkText style={{alignSelf : 'flex-end'}} ><Icon name="ios-arrow-forward" /></RkText>
+                </View>
                 </View >
             </RkCard>
         </TouchableOpacity>
@@ -83,8 +94,8 @@ export class Speakers extends RkComponent {
                     </ScrollView>
                 </Container>
             )
-        }
-        else {
+       }
+       else {
             return (
                 <Container style={[styles.root]}>
                     <View style={[styles.loading]}>
@@ -104,22 +115,6 @@ let styles = RkStyleSheet.create(theme => ({
         flex: 1,
         flexDirection: 'column'
     },
-    avatar: {
-        backgroundColor: '#C0C0C0',
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        textAlign: 'center',
-        fontSize: 20,
-        textAlignVertical: 'center',
-        marginRight: 5
-      },
-      avatarImage: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        marginRight: 5
-      },
     loading: {
         marginTop: 200,
         left: 0,
@@ -150,6 +145,9 @@ let styles = RkStyleSheet.create(theme => ({
     headerText: {
         fontWeight: 'bold',
         fontSize: 16
+    },
+    infoText : {
+        fontSize: 12
     },
     content: {
         margin: 2,

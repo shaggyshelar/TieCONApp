@@ -56,20 +56,20 @@ export class Speakers extends RkComponent {
      return this.state.Speakers.map((speaker,index )=> {
         let avatar;
         if (speaker.speakerData.profileImageURL) {
-          avatar = <Avatar rkType='small' style={{width: 44,height: 44,borderRadius: 26}} imagePath={speaker.speakerData.profileImageURL} />
+          avatar = <Avatar rkType='small' style={{width: 44,height: 44,borderRadius: 60}} imagePath={speaker.speakerData.profileImageURL} />
         } else {
-          avatar = <Image style={{width: 36,height: 36,borderRadius: 26}} source={require('../../assets/images/defaultUserImg.png')}/>
+          avatar = <Image style={{width: 34,height: 34}} source={require('../../assets/images/defaultUserImg.png')}/>
         }
          return(
             <TouchableOpacity
              key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker.speakerData , speakersId :[speaker.speakerId] })}
         >
             <RkCard rkType='shadowed' style={styles.card}>
-            <View style={{flexDirection : 'row' }}>
-                <View style={{flexDirection : 'column' , alignItems : 'flex-start', marginVertical : 10 , marginLeft : 5,width : 50 ,flex : 1}}>
+            <View style={{flexDirection : 'row'}}>
+                <View style={{flexDirection : 'column' , alignItems : 'flex-start', marginVertical : 10 , marginLeft : 5,width : 50 ,flex : 2}}>
                      {avatar}
                 </View>
-                <View style={{flexDirection : 'column' ,marginVertical : 10 , flex:2 }}>
+                <View style={{flexDirection : 'column' ,marginVertical : 10 , flex:7, marginLeft:5 }}>
                     <Text style={styles.headerText}>{speaker.speakerData.fullName}</Text>
                     <Text style={styles.infoText}>{speaker.speakerData.briefInfo}</Text>
                 </View >

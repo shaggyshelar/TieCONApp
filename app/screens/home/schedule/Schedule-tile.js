@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, Icon } from 'native-base';
 import { AsyncStorage, FlatList, TouchableOpacity, Alert, Image } from 'react-native';
-import { RkComponent, RkTheme, RkText, RkButton, RkCard } from 'react-native-ui-kitten';
+import { RkComponent, RkTheme, RkText, RkButton, RkCard, RkStyleSheet } from 'react-native-ui-kitten';
 import { NavigationActions } from 'react-navigation';
 
 import styleConstructor, { getStatusStyle } from './styles';
@@ -227,10 +227,10 @@ export default class ScheduleTile extends RkComponent {
                             flexDirection: 'row',
                             flex: 3,
                             }}>
-                            <Text style={this.styles.headerText}>{this.props.session.eventName}</Text>
+                            <Text style={this.styles.headerText} style={{fontSize:16, height:30, fontWeight:'600', lineHeight:15}}>{this.props.session.eventName}</Text>
                     </TouchableOpacity>;
         }else {
-           return  <Text style={this.styles.headerText}>{this.props.session.eventName}</Text>;
+           return  <Text style={this.styles.headerText} style={{fontSize:16, height:30, fontWeight:'600', lineHeight:15}}>{this.props.session.eventName}</Text>;
         }
 
     }
@@ -248,7 +248,7 @@ export default class ScheduleTile extends RkComponent {
             </View>
             );
         }else {
-           return <Text style={this.styles.headerText}>   </Text>;
+           return <Text style={this.styles.headerText} style={{fontSize:16, height:30, fontWeight:'600', lineHeight:15}}>   </Text>;
         }
 
     }
@@ -270,7 +270,7 @@ export default class ScheduleTile extends RkComponent {
                             {this.applyTouchOpacityArrow(this.props.session.isBreak)}
                         </View>
                     </View >
-                    <View style={this.styles.content}>
+                    <View style={this.styles.content} >
                         {/* {speakers} */}
                         <View
                             style={this.styles.tileFooter}>
@@ -290,3 +290,12 @@ export default class ScheduleTile extends RkComponent {
         }
     }
 }
+
+
+let styles = RkStyleSheet.create(theme => ({
+    headerText:{
+        fontSize:20,
+        height:30
+    }
+
+}));

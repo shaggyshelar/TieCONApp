@@ -159,14 +159,6 @@ export const MainRoutes = [
     screen: Screens.Speakers,
     children: []
   },
-
-  {
-     id: 'AboutUs',
-     title: 'About Tie',
-     icon: 'md-information-circle',
-     screen: Screens.AboutUs,
-     children: []
-   },
    {
      id: 'VenueMap',
      title: 'Venue Map',
@@ -181,6 +173,20 @@ export const MainRoutes = [
      screen: Screens.VenueMap,
      children: []
    },
+   {
+    id: 'AboutUs',
+    title: 'About Tie',
+    icon: 'md-information-circle',
+    screen: Screens.AboutUs,
+    children: []
+  },
+  {
+    id: 'AboutEternus',
+    title: 'About Eternus',
+    icon: 'md-information-circle',
+    screen: Screens.AboutEternus,
+    children: []
+  },
 ];
 
 let menuRoutes = _.cloneDeep(MainRoutes);

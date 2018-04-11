@@ -22,7 +22,7 @@
     },
     "android": {
       "package": "com.eternus.tieconpuneevents",
-      "versionCode": 16
+      "versionCode": 17
     },
     "version": "1.0.2",
     "primaryColor": "#ed1b24",

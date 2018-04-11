@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, SectionList, StyleSheet } from 'react-native';
+import { FlatList, SectionList, StyleSheet,ActivityIndicator } from 'react-native';
 import { Text, View } from 'native-base';
 import { RkText, RkComponent, RkTextInput, RkAvoidKeyboard, RkTheme, RkStyleSheet } from 'react-native-ui-kitten';
 import { data } from '../../../data';
@@ -72,8 +72,16 @@ export class SpeakerSessionList extends RkComponent {
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => <ScheduleTile navigation={this.props.navigation} session={item} />}
       />)
-    } else {
-      sessionList = (<Text>loading...</Text>)
+    }
+    else if(this.state.sessionList && this.state.sessionList.length == 0){
+      sessionList = (<View style={styles.loading} >
+        <Text>No Sessions found...</Text>
+      </View>)
+    } 
+    else {
+      sessionList = (<View style={styles.loading} >
+        <ActivityIndicator size='large' />
+      </View>)
     }
     return (
       <View style={styles.listContainer}>
@@ -88,5 +96,15 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
     flexDirection: 'column'
-  }
+  },
+  loading: {
+    marginTop: 250,
+    left: 0,
+    opacity: 0.5,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
 });

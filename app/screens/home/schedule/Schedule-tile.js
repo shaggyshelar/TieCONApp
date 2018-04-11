@@ -44,6 +44,11 @@ export default class ScheduleTile extends RkComponent {
      *  Get Speaker Details
      */
     componentDidMount() {
+        Service.getCurrentUser((userObj) => {
+            this.setState({
+                user: userObj
+            });
+        });
         this.fetchSpeakers();
         this.fetchRegistrationStatus();
     }

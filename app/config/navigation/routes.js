@@ -170,7 +170,7 @@ export const MainRoutes = [
      id: 'HelpDesk',
      title: 'Helpdesk',
      icon: 'md-help',
-     screen: Screens.VenueMap,
+     screen: Screens.HelpDesk,
      children: []
    },
    {

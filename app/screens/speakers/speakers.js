@@ -28,7 +28,7 @@ export class Speakers extends RkComponent {
       componentWillMount() {
           let thisRef = this;
           let speakerCollection = [];
-        firestoreDB.collection("Attendee")
+        firestoreDB.collection("Attendee").orderBy("firstName", "asc")
         .get()
         .then(function (doc) {
            doc.forEach(fItem => {

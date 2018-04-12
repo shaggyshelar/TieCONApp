@@ -30,7 +30,7 @@ export default class EventCal extends Component {
     extractSession = (sessionObj) => {
         const {
             eventName,
-            extraServices,
+           // extraServices,
             isRegrequired,
             room,
             startTime,
@@ -43,7 +43,7 @@ export default class EventCal extends Component {
         return {
             key: sessionObj.id,
             eventName,
-            extraServices,
+           // extraServices,
             isRegrequired:!!isRegrequired,
             room,
             speakers,

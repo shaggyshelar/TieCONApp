@@ -26,7 +26,7 @@ export class AboutEternus extends React.Component {
     return (
       <ScrollView style={styles.root}>
         <View style={styles.header}>
-          <Image style={{width: 159, height: scaleVertical(100),resizeMode: 'contain',marginLeft:'auto', marginRight:'auto'}} source={require('../../assets/images/eternusLogoNew.png')}/>
+          <Image style={styles.eternusLogo} source={require('../../assets/images/eternusLogoMain.png')}/>
         </View>
         <View style={styles.section} pointerEvents='none'>
           <View style={[styles.row]}>
@@ -70,4 +70,12 @@ let styles = RkStyleSheet.create(theme => ({
     borderColor: theme.colors.border.base,
     alignItems: 'center'
   },
+  eternusLogo:{
+    height:80,
+    width: 180,
+    /*height: scaleVertical(55),*/
+    resizeMode: 'contain',
+    marginLeft:'auto',
+    marginRight:'auto',
+  }
 }));

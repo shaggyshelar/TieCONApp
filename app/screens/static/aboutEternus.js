@@ -1,7 +1,8 @@
 import React from 'react';
 import {RkText, RkStyleSheet} from 'react-native-ui-kitten';
-import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,Text} from 'react-native';
+import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,Text, Linking, TouchableOpacity} from 'react-native';
 import {scale, scaleModerate, scaleVertical} from '../../utils/scale';
+
 function renderIf(condition, content) {
   if (condition) {
     return content;
@@ -28,7 +29,7 @@ export class AboutEternus extends React.Component {
         <View style={styles.header}>
           <Image style={styles.eternusLogo} source={require('../../assets/images/eternusLogoMain.png')}/>
         </View>
-        <View style={styles.section} pointerEvents='none'>
+        <View style={styles.section} pointerEvents='auto'>
           <View style={[styles.row]}>
             <Text
               style={{
@@ -39,7 +40,12 @@ export class AboutEternus extends React.Component {
              Eternus Solutions has carved a niche for itself in the IT industry and cemented its place as India’s leading IT services provider by acquiring elite clientele. 
              The organization has made a mark for itself in the industry in a relatively short span of time through its ability and adherence to commitments to its clients.
              </Text>
-          </View>
+           </View >
+         <TouchableOpacity onPress={() => Linking.openURL('https://www.eternussolutions.com/')}>
+          <Text style={{color: 'blue', fontSize: 15,  textAlign: 'center', marginTop:10 }}>
+          https://www.eternussolutions.com/
+        </Text>
+        </TouchableOpacity>
         </View>
       </ScrollView>
     );

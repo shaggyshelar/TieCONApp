@@ -65,6 +65,7 @@ export default class EventCal extends Component {
             .where("startTime", ">=", currentDate.toDate())
             .where("startTime", "<=", currentDate.add(1, 'day').toDate())
             .orderBy("startTime")
+            .orderBy("room")
             .get()
             .then(successFn)
             .catch(err =>{
@@ -111,11 +112,7 @@ export default class EventCal extends Component {
             let index = 0;
             snapshot.forEach((sessionObj) => {
                 let __sessionObj = this.extractSession(sessionObj);
-                if(__sessionObj.room == "Entrance"){
-                    // Do not add this session to Sessions List
-                }else{
-                    sessions.push(__sessionObj);
-                }
+                sessions.push(__sessionObj);
             });
             let newSessions = {};
             newSessions[day.dateString] = sessions;

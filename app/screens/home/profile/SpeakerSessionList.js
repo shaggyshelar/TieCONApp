@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, SectionList, StyleSheet,ActivityIndicator } from 'react-native';
+import { FlatList, SectionList, StyleSheet, ActivityIndicator } from 'react-native';
 import { Text, View } from 'native-base';
 import { RkText, RkComponent, RkTextInput, RkAvoidKeyboard, RkTheme, RkStyleSheet } from 'react-native-ui-kitten';
 import { data } from '../../../data';
@@ -40,17 +40,23 @@ export class SpeakerSessionList extends RkComponent {
           let { params } = this.props.navigation.state;
           let speakersId = params.speakersId;
           let speakerId = speakersId[0];
-          if (request.data().speakers == speakerId) {
-            sessions.push({
-              key: id,
-              eventName: session.eventName,
-              room: session.room,
-              speakers: session.speakers,
-              startTime: session.startTime,
-              endTime: session.endTime,
-              description: session.description,
-              speakersDetails: [],
-            });
+          if (request.data().speakers != undefined) {
+            let speakerArray = request.data().speakers;
+            let i;
+            for (i = 0; i < speakerArray.length; i++) {
+              if (speakerArray[i] == speakerId) {
+                sessions.push({
+                  key: id,
+                  eventName: session.eventName,
+                  room: session.room,
+                  speakers: session.speakers,
+                  startTime: session.startTime,
+                  endTime: session.endTime,
+                  description: session.description,
+                  speakersDetails: [],
+                });
+              }
+            }
           }
         });
         let newSessions = [];
@@ -59,7 +65,7 @@ export class SpeakerSessionList extends RkComponent {
           ...prevState,
           sessionList: newSessions
         }));
-      }, function(error){
+      }, function (error) {
         console.warn(error);
       });
   }
@@ -73,11 +79,11 @@ export class SpeakerSessionList extends RkComponent {
         renderItem={({ item, index }) => <ScheduleTile navigation={this.props.navigation} session={item} />}
       />)
     }
-    else if(this.state.sessionList && this.state.sessionList.length == 0){
+    else if (this.state.sessionList && this.state.sessionList.length == 0) {
       sessionList = (<View style={styles.loading} >
         <Text>No Sessions found...</Text>
       </View>)
-    } 
+    }
     else {
       sessionList = (<View style={styles.loading} >
         <ActivityIndicator size='large' />
@@ -91,7 +97,6 @@ export class SpeakerSessionList extends RkComponent {
 
   }
 }
-
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,

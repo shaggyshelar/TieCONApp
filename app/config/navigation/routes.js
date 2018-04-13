@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator} from 'react-native';
+import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, NetInfo,Platform} from 'react-native';
 import {RkText, RkStyleSheet} from 'react-native-ui-kitten';
 
 import {FontIcons} from '../../assets/icons';
@@ -46,10 +46,63 @@ export class HomePageMenuScreen extends React.Component {
         showQuestions : false,
         showHomepage : false,
         userId : "",
-        showHome : show
+        showHome : show,
+        isLoading : false,
+        isOffline : false
     }
   }
-  componentWillMount(){
+/**check */
+componentWillMount() {
+  if(Platform.OS !== 'ios'){
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected) {
+        this.getCurrentUser();
+        this.setState({
+          isLoading: true
+        });
+      } else {
+        this.setState({
+          isLoading: false,
+          isOffline : true
+        });
+      }
+
+      this.setState({
+        isOffline: !isConnected
+      });
+    });  
+  }
+  this.getCurrentUser();
+  NetInfo.addEventListener(
+    'connectionChange',
+    this.handleFirstConnectivityChange
+  );
+}
+
+handleFirstConnectivityChange = (connectionInfo) => {
+  if(connectionInfo.type != 'none') {
+    this.getCurrentUser();
+      this.setState({
+        isLoading: true
+      });
+  } else {
+    this.setState({
+      isLoading: false,
+      isOffline : true
+    });
+  }
+  this.setState({
+    isOffline: connectionInfo.type === 'none',
+  });
+};
+
+componentWillUnmount() {
+  NetInfo.removeEventListener(
+    'connectionChange',
+    this.handleFirstConnectivityChange
+  );  
+}
+getCurrentUser(){
     Service.getCurrentUser((userDetails)=>{
       let Uid =  userDetails.uid;
       this.setState({
@@ -94,7 +147,15 @@ getQuestionsData = (Uid) =>{
       return (
         <View style={styles.mainView}>
           <HomePage navigation={this.props.navigation} />
-          <View style={styles.footer}><RkText rkType="small" style={styles.footerText}>Powered by</RkText><RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText></View>
+          <View style={styles.footerOffline}>
+            {
+              (!this.state.isLoading && this.state.isOffline) ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
+            }
+          </View>
+          <View style={styles.footer}>
+            <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
+            <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
+          </View>
         </View>
       );
     }
@@ -213,6 +274,13 @@ const styles = RkStyleSheet.create(theme => ({
     alignItems: 'center',
     alignSelf: 'stretch', 
     backgroundColor : '#E7060E'
+  },
+  footerOffline : {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch', 
+    backgroundColor : '#545454'
   },
   footerText: {
     color : '#f0f0f0',

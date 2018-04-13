@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image,Platform,Text, Button, View, TouchableOpacity, StyleSheet, AsyncStorage, ScrollView,ActivityIndicator,Alert } from 'react-native';
+import { Image,Platform,Text, Button, View, TouchableOpacity, StyleSheet, AsyncStorage, ScrollView,ActivityIndicator,Alert,NetInfo } from 'react-native';
 import { RkButton, RkStyleSheet, RkText, RkCard } from 'react-native-ui-kitten';
 import { Icon, Container, Tabs, Tab, TabHeading } from 'native-base';
 import { NavigationActions, TabNavigator, TabView } from 'react-navigation';
@@ -37,10 +37,62 @@ export class SessionDetails extends Component {
         regId: "",
         currentSessionStart : Moment(this.sessionDetails.startTime).format(),
         currentSessionEnd  :  Moment(this.sessionDetails.endTime).format(),
-        sameTimeRegistration : false
+        sameTimeRegistration : false,
+        isOffline : false
       }
   }
-  componentWillMount() {
+/**check */
+componentWillMount() {
+  if(Platform.OS !== 'ios'){
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected) {
+        this.getCurrentUser();
+        this.setState({
+          isLoading: true
+        });
+      } else {
+        this.setState({
+          isLoading: false,
+          isOffline : true
+        });
+      }
+      
+      this.setState({
+        isOffline: !isConnected
+      });
+    });  
+  }
+  this.getCurrentUser();
+  NetInfo.addEventListener(
+    'connectionChange',
+    this.handleFirstConnectivityChange
+  );
+}
+
+handleFirstConnectivityChange = (connectionInfo) => {
+  if(connectionInfo.type != 'none') {
+    this.getCurrentUser();
+      this.setState({
+        isLoading: true
+      });
+  } else {
+    this.setState({
+      isLoading: false,
+      isOffline : true
+    });
+  }
+  this.setState({
+    isOffline: connectionInfo.type === 'none',
+  });
+};
+
+componentWillUnmount() {
+  NetInfo.removeEventListener(
+    'connectionChange',
+    this.handleFirstConnectivityChange
+  );  
+}
+getCurrentUser() {
     Service.getCurrentUser((userDetails) => {
       this.setState({
         user: userDetails.firstName + " " + userDetails.lastName,
@@ -315,6 +367,15 @@ export class SessionDetails extends Component {
         <View style={[styles.surveButton]}>
         {surveyButton}
       </View>
+      <View style={styles.footerOffline}>
+            {
+              this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
+            }
+          </View> 
+          <View style={styles.footer}>
+            <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
+            <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
+          </View>
       </Container>
       )
     }
@@ -423,5 +484,28 @@ let styles = RkStyleSheet.create(theme => ({
     bottom: 0,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch', 
+    backgroundColor : '#E7060E'
+  },
+  footerOffline : {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch', 
+    backgroundColor : '#545454'
+  },
+  footerText: {
+    color : '#f0f0f0',
+    fontSize: 11,
+  },
+  companyName:{
+    color : '#ffffff',
+    fontSize: 12,
+    fontWeight: 'bold'
   },
 }));

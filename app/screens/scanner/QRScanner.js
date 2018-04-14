@@ -4,7 +4,7 @@ import { RkButton, RkText, RkTextInput, RkStyleSheet, RkTheme, RkAvoidKeyboard }
 import { FontAwesome } from '../../assets/icons';
 import { GradientButton } from '../../components/gradientButton';
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
-import { Platform } from 'react-native';
+import { Platform, Vibration } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import { BarCodeScanner, Permissions } from 'expo';
 import { Container, Header, Title, Content, Button, Icon, Right, Body, Left, Picker, ListItem } from "native-base";
@@ -39,6 +39,7 @@ export class QRScanner extends React.Component {
       lastScannedResult: '',
       sessionUsers: [],
       isOffline: false,
+      loggedInUser: {},
       results: {
         items: []
       }
@@ -49,6 +50,7 @@ export class QRScanner extends React.Component {
   }
   
   _getSesssionsFromServer() {
+    console.warn('geting from server');
     let db = firebase.firestore();
     let thisRef = this;
     let sessions = [];    
@@ -100,6 +102,7 @@ export class QRScanner extends React.Component {
 
   componentDidMount() {
     this._requestCameraPermission();
+    let thisRef = this;
     NetInfo.isConnected.fetch().then(isConnected => {
       if(isConnected) {
         this.setState({
@@ -115,6 +118,17 @@ export class QRScanner extends React.Component {
         isOffline: !isConnected
       });
     });  
+    AsyncStorage.getItem("USER_DETAILS").then((userDetails) => {
+      if(userDetails) {
+        let user = JSON.parse(userDetails)
+        thisRef.setState({
+          loggedInUser: user
+        });  
+      }
+    })
+    .catch(err => {
+      console.warn('Error',err);
+    }); 
     NetInfo.addEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange
@@ -177,10 +191,12 @@ export class QRScanner extends React.Component {
                     userLabel: userInfo,
                     sessionId: this.state.selectedSession,
                     session: selectedSession,
+                    scannedBy: this.state.loggedInUser.uid,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                   }, { merge: true })
                     .then((docRef) => {
                       this.setState({ isLoading: false });
+                      Vibration.vibrate(200);      
                     })
                     .catch((error) => {
                       this.setState({ isLoading: false });
@@ -210,10 +226,12 @@ export class QRScanner extends React.Component {
             userLabel: userInfo,
             sessionId: this.state.selectedSession,
             session: selectedSession,
+            scannedBy: this.state.loggedInUser.uid,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
           }, { merge: true })
             .then((docRef) => {
               this.setState({ isLoading: false });
+              Vibration.vibrate(500);
             })
             .catch((error) => {
               this.setState({ isLoading: false });

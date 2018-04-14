@@ -36,7 +36,7 @@ export class QRScanner extends React.Component {
       selectedSession: "",
       isLoading: true,
       sessions: [],
-      scanHistory: [],
+      lastScannedResult: '',
       sessionUsers: [],
       isOffline: false,
       results: {
@@ -56,14 +56,14 @@ export class QRScanner extends React.Component {
       querySnapshot.forEach(function (doc) {
         let sessionData = doc.data();
         sessionData['id'] = doc.id;
-        if(!sessionData.isBreak) {
+        if(sessionData.sessionType != 'break') {
           sessionData['eventName'] = sessionData.eventName + '(' + sessionData.room + ')';
           sessions.push(sessionData);
         }
       });
       if (sessions.length > 0) {
         thisRef.setState({ sessions, selectedSession: sessions[0].id });
-        AsyncStorage.setItem("QR_SESSIONS", JSON.stringify(sessions));
+        //AsyncStorage.setItem("QR_SESSIONS", JSON.stringify(sessions));
         thisRef._getCurrentSessionUsers(sessions[0].id);
       } else {
         thisRef.setState({ error: 'No sessions configured on server. Please contact administrator.', isLoading: false });
@@ -83,39 +83,38 @@ export class QRScanner extends React.Component {
 
   _getSessions() {
     let thisRef = this;
-    AsyncStorage.getItem("QR_SESSIONS").then((sessions) => {
-      if (sessions != null){
-        let sessionsObj = JSON.parse(sessions);
-        thisRef.setState({ sessions: sessionsObj, selectedSession: sessionsObj[0].id });
-        thisRef._getCurrentSessionUsers(sessionsObj[0].id);
-      } else {
-        thisRef._getSesssionsFromServer();
-      }
-    })
-    .catch(err => {
-      thisRef._getSesssionsFromServer();
-    });
+    thisRef._getSesssionsFromServer();
+    // AsyncStorage.getItem("QR_SESSIONS").then((sessions) => {
+    //   if (sessions != null){
+    //     let sessionsObj = JSON.parse(sessions);
+    //     thisRef.setState({ sessions: sessionsObj, selectedSession: sessionsObj[0].id });
+    //     thisRef._getCurrentSessionUsers(sessionsObj[0].id);
+    //   } else {
+    //     thisRef._getSesssionsFromServer();
+    //   }
+    // })
+    // .catch(err => {
+    //   thisRef._getSesssionsFromServer();
+    // });
   }
 
   componentDidMount() {
     this._requestCameraPermission();
-    if(Platform.OS !== 'ios'){
-      NetInfo.isConnected.fetch().then(isConnected => {
-        if(isConnected) {
-          this.setState({
-            isLoading: true
-          });
-          this._getSessions();  
-        } else {
-          this.setState({
-            isLoading: false
-          });
-        }
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected) {
         this.setState({
-          isOffline: !isConnected
+          isLoading: true
         });
-      });  
-    }
+        this._getSessions();  
+      } else {
+        this.setState({
+          isLoading: false
+        });
+      }
+      this.setState({
+        isOffline: !isConnected
+      });
+    });  
     NetInfo.addEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange
@@ -157,18 +156,15 @@ export class QRScanner extends React.Component {
     return session;
   }
 
-  _updateUserData(scannedData) {
-      if (this.state.scanHistory.indexOf(scannedData) == -1 && !this.state.isLoading) {
-        this.setState({ isLoading: true });
-        let updatedScannedHistory = this.state.scanHistory;
-        if (updatedScannedHistory.length >= 5) {
-          updatedScannedHistory.push(scannedData);
-          updatedScannedHistory.slice(0, updatedScannedHistory.length - 1)
-        }
-
-        this.setState({ scanHistory: updatedScannedHistory });
+  _updateUserData(scannedData, userInfo) {
+      if (this.state.lastScannedResult != scannedData && !this.state.isLoading) {
+        this.setState({ isLoading: true, lastScannedResult: scannedData });
         let selectedSession = this._getSelectedSession();
-        if (selectedSession.isRegistrationRequired && this.state.sessionUsers.indexOf(scannedData) == -1) {
+        let parsedUserInfo = userInfo.split("-");
+        if(parsedUserInfo.length == 1) {
+          parsedUserInfo.push('');
+        }
+        if (selectedSession.sessionType == 'deepdive' && parsedUserInfo[0] == 'DEL' && this.state.sessionUsers.indexOf(scannedData) == -1) {
           Alert.alert(
             'Unregistered User',
             'This user is not registered for this session. Do you still want to continue?',
@@ -177,6 +173,8 @@ export class QRScanner extends React.Component {
                 text: 'Yes', onPress: () => {
                   firestoreDB.collection('Attendance').doc(scannedData).set({
                     userId: scannedData,
+                    userType: parsedUserInfo[0],
+                    userLabel: userInfo,
                     sessionId: this.state.selectedSession,
                     session: selectedSession,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -208,6 +206,8 @@ export class QRScanner extends React.Component {
         } else {
           firestoreDB.collection('Attendance').doc(scannedData).set({
             userId: scannedData,
+            userType: parsedUserInfo[0],
+            userLabel: userInfo,
             sessionId: this.state.selectedSession,
             session: selectedSession,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -227,12 +227,31 @@ export class QRScanner extends React.Component {
               );
             });
         }
+      } else {
+        console.warn('already scanned');        
       }
   }
 
   _validateQRData(data) {
-    if (data.startsWith('TIECON:')) {
-      this._updateUserData(data.substring(7));
+    if (data.startsWith('TIE:')) {
+      let parsedData = data.split(":");
+      if(parsedData.length == 3){
+        this._updateUserData(parsedData[2], parsedData[1]);
+      } else {
+        this.setState({ isErrorDisplayed: true, isLoading: false });
+        Alert.alert(
+          'Invalid Data',
+          'This QR code is not valid TiE QR Code.',
+          [
+            {
+              text: 'Ok', onPress: () => {
+                this.setState({ isErrorDisplayed: false });
+              }
+            },
+          ],
+          { cancellable: false }
+        );
+      }
     } else {
       this.setState({ isErrorDisplayed: true, isLoading: false });
       Alert.alert(
@@ -284,7 +303,7 @@ export class QRScanner extends React.Component {
     this.setState({
       selectedSession: selectedSessionId,
       isLoading: true,
-      scanHistory: []
+      lastScannedResult: ''
     });
     this._getCurrentSessionUsers(selectedSessionId);
   }

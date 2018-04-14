@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, Platform} from 'react-native';
+import {ScrollView, Platform,NetInfo} from 'react-native';
 import { Text, View, Icon, Container, Label } from 'native-base';
 import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Alert, AsyncStorage ,ActivityIndicator} from 'react-native';
 import { RkComponent, RkTheme,RkStyleSheet, RkText, RkAvoidKeyboard, RkButton, RkCard, RkChoice, RkTextInput, RkChoiceGroup } from 'react-native-ui-kitten';
@@ -23,12 +23,63 @@ export class Survey extends RkComponent {
             responses : [],
             queArray : [],
            sessionId : this.props.navigation.state.params.sessionDetails.key,
-           session :this.props.navigation.state.params.sessionDetails
+           session :this.props.navigation.state.params.sessionDetails,
+           isOffline : false
         }
         this.onFormSelectValue = this.onFormSelectValue.bind(this);
         this.onMultiChoiceChange = this.onMultiChoiceChange.bind(this);
     }
     componentWillMount() {
+        if(Platform.OS !== 'ios'){
+          NetInfo.isConnected.fetch().then(isConnected => {
+            if(isConnected) {
+              this.getCurrentUser();
+              this.setState({
+                isLoading: true
+              });
+            } else {
+              this.setState({
+                isLoading: false,
+                isOffline : true
+              });
+            }         
+            this.setState({
+              isOffline: !isConnected
+            });
+          });  
+        }
+        this.getCurrentUser();
+        NetInfo.addEventListener(
+          'connectionChange',
+          this.handleFirstConnectivityChange
+        );
+      }
+
+      handleFirstConnectivityChange = (connectionInfo) => {
+        if(connectionInfo.type != 'none') {
+          this.getCurrentUser();
+            this.setState({
+              isLoading: true
+            });
+        } else {
+          this.setState({
+            isLoading: false,
+            isOffline : true
+          });
+        }
+        this.setState({
+          isOffline: connectionInfo.type === 'none',
+        });
+      };   
+
+      componentWillUnmount() {
+        NetInfo.removeEventListener(
+          'connectionChange',
+          this.handleFirstConnectivityChange
+        );  
+      }
+
+      getCurrentUser() {
         this.getForm();
         let thisRef = this;
         AsyncStorage.getItem("USER_DETAILS").then((userDetails) => {
@@ -181,9 +232,20 @@ export class Survey extends RkComponent {
         if (this.state.questionsForm.length == 0 ){
             return (
                 <Container style={[styles.screen]}>
-                <View style={[styles.loading]} >
-                    <ActivityIndicator size='large' />
-                </View>
+                    <ScrollView>
+                        <View style={[styles.loading]} >
+                            <ActivityIndicator size='large' />
+                        </View>
+                    </ScrollView>
+                    <View style={[styles.footerOffline]}>
+                        {
+                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
+                        }
+                    </View>
+                    <View style={[styles.footer]}>
+                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
+                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+                    </View>
                 </Container>
             );
         }
@@ -191,14 +253,21 @@ export class Survey extends RkComponent {
             return (
                 <Container style={[styles.screen]}>
                     <ScrollView>
-                        <RkCard style={[styles.Card]}>
                             {this.onFormSelectValue(this.state.questionsForm)}
                             <GradientButton colors={['#f20505', '#f55050']} text='Submit'
                                 style={[styles.Gradbtn]}
                                 onPress={() => this.onSubmitResponse()}
                             />
-                        </RkCard>
                     </ScrollView>
+                    <View style={[styles.footerOffline]}>
+                        {
+                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
+                        }
+                    </View>
+                    <View style={[styles.footer]}>
+                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
+                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+                    </View>
                 </Container>
             );
         } 
@@ -207,13 +276,7 @@ export class Survey extends RkComponent {
 
 let styles = RkStyleSheet.create(theme => ({
     screen: {
-        padding: 10,
-        flex: 1,
         backgroundColor: theme.colors.screen.base
-      },
-      Card: {
-        width : Platform.OS === 'ios' ? 320 : 350, 
-        alignSelf:'center'
       },
     loading: {
         marginTop: 250,
@@ -230,5 +293,28 @@ let styles = RkStyleSheet.create(theme => ({
           width: Platform.OS === 'ios' ? 280 : 340,
           marginTop: 3,
           marginBottom: 3
-      }
+      },
+      footer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'stretch', 
+        backgroundColor : '#E7060E'
+      },
+      footerOffline : {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'stretch', 
+        backgroundColor : '#545454'
+      },
+      footerText: {
+        color : '#f0f0f0',
+        fontSize: 11,
+      },
+      companyName:{
+        color : '#ffffff',
+        fontSize: 12,
+        fontWeight: 'bold'
+      },
     }));

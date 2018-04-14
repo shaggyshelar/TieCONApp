@@ -1,7 +1,8 @@
 import React from 'react';
-import { ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator } from 'react-native';
+import { ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator,Platform,NetInfo } from 'react-native';
 import { RkText, RkTextInput, RkAvoidKeyboard, RkTheme, RkStyleSheet } from 'react-native-ui-kitten';
 import {data} from '../../data';
+import { Container } from 'native-base';
 import {Avatar} from '../../components';
 import {FontAwesome} from '../../assets/icons';
 import {GradientButton} from '../../components';
@@ -44,8 +45,58 @@ export class ProfileSettings extends React.Component {
     this.onLinkedInConnect = this.onLinkedInConnect.bind(this);
     this.getLinkedinProfileDetails = this.getLinkedinProfileDetails.bind(this);
   }
+/**check */
+componentWillMount() {
+  if(Platform.OS !== 'ios'){
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected) {
+        this.getCurrentUser();
+        this.setState({
+          isLoading: true
+        });
+      } else {
+        this.setState({
+          isLoading: false,
+          isOffline : true
+        });
+      }
 
-  componentWillMount() {
+      this.setState({
+        isOffline: !isConnected
+      });
+    });  
+  }
+  this.getCurrentUser();
+  NetInfo.addEventListener(
+    'connectionChange',
+    this.handleFirstConnectivityChange
+  );
+}
+
+handleFirstConnectivityChange = (connectionInfo) => {
+  if(connectionInfo.type != 'none') {
+    this.getCurrentUser();
+      this.setState({
+        isLoading: true
+      });
+  } else {
+    this.setState({
+      isLoading: false,
+      isOffline : true
+    });
+  }
+  this.setState({
+    isOffline: connectionInfo.type === 'none',
+  });
+};
+
+componentWillUnmount() {
+  NetInfo.removeEventListener(
+    'connectionChange',
+    this.handleFirstConnectivityChange
+  );  
+}
+getCurrentUser() {
     let thisRef = this;
     AsyncStorage.getItem("USER_LINKEDIN_TOKEN").then((token)=>{
       if(token){
@@ -134,7 +185,8 @@ export class ProfileSettings extends React.Component {
 
   render() {
     return (
-      <ScrollView style={styles.root}>
+      <Container style={styles.root}>
+      <ScrollView >
         <RkAvoidKeyboard>
           <View style={styles.header}>
             {renderIf(this.state.pictureUrl == 'https://randomuser.me/api/portraits/men/49.jpg',
@@ -210,13 +262,37 @@ export class ProfileSettings extends React.Component {
           onSuccess={token => this.onLinkedInConnect(token) }
         />
         {renderIf(this.state.isLoading,
-            <View style={styles.loading}> 
-              <ActivityIndicator size='large' /> 
-            </View>
+            <Container style={[styles.root]}>
+              <ScrollView>
+                <View style={[styles.loading]} >
+                  <ActivityIndicator size='large' />
+                </View>
+              </ScrollView>
+              <View style={[styles.footerOffline]}>
+                {
+                  this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
+                }
+              </View>
+              <View style={[styles.footer]}>
+                <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
+                <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+              </View>
+            </Container>
           )}
       </View>
 
       </ScrollView>
+      <View style={[styles.footerOffline]}>
+                {
+                  this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
+                }
+              </View>
+              <View style={[styles.footer]}>
+                <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
+                <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+              </View>
+
+      </Container>
     )
   }
 }
@@ -265,5 +341,28 @@ let styles = RkStyleSheet.create(theme => ({
   },
   profileText:{
     fontSize:13,
-  }
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch', 
+    backgroundColor : '#E7060E'
+  },
+  footerOffline : {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch', 
+    backgroundColor : '#545454'
+  },
+  footerText: {
+    color : '#f0f0f0',
+    fontSize: 11,
+  },
+  companyName:{
+    color : '#ffffff',
+    fontSize: 12,
+    fontWeight: 'bold'
+  },
 }));

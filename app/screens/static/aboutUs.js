@@ -1,7 +1,7 @@
 import React from 'react';
 import { RkText, RkStyleSheet } from 'react-native-ui-kitten';
-import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity } from 'react-native';
-
+import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage,Platform,NetInfo, ActivityIndicator, Text, Linking, TouchableOpacity } from 'react-native';
+import { Container } from 'native-base';
 function renderIf(condition, content) {
   if (condition) {
     return content;
@@ -17,13 +17,62 @@ export class AboutUs extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      isOffline: false
+    }
   }
 
-  componentWillMount() { }
+ 
+  componentWillMount() {
+    if (Platform.OS !== 'ios') {
+      NetInfo.isConnected.fetch().then(isConnected => {
+        if (isConnected) {
+          this.setState({
+            isLoading: true
+          });
+        } else {
+          this.setState({
+            isLoading: false,
+            isOffline: true
+          });
+        }
+        this.setState({
+          isOffline: !isConnected
+        });
+      });
+    }
+    NetInfo.addEventListener(
+      'connectionChange',
+      this.handleFirstConnectivityChange
+    );
+  }
+
+  handleFirstConnectivityChange = (connectionInfo) => {
+    if (connectionInfo.type != 'none') {
+      this.setState({
+        isLoading: true
+      });
+    } else {
+      this.setState({
+        isLoading: false,
+        isOffline: true
+      });
+    }
+    this.setState({
+      isOffline: connectionInfo.type === 'none',
+    });
+  };
+
+  componentWillUnmount() {
+    NetInfo.removeEventListener(
+      'connectionChange',
+      this.handleFirstConnectivityChange
+    );
+  }
 
   render() {
     return (
+      <Container>
       <ScrollView style={styles.root}>
         <View style={styles.header}>
           <Image style={{ width: 159, height: 78, marginLeft: 'auto', marginRight: 'auto' }} source={require('../../assets/images/tie-pune-logo.jpg')} />
@@ -51,6 +100,16 @@ export class AboutUs extends React.Component {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <View style={styles.footerOffline}>
+          {
+            this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
+          }
+        </View>
+        <View style={styles.footer}>
+          <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
+          <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
+        </View>
+      </Container>
     );
   }
 }
@@ -78,5 +137,28 @@ let styles = RkStyleSheet.create(theme => ({
     //borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: theme.colors.border.base,
     alignItems: 'center'
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    backgroundColor: '#E7060E'
+  },
+  footerOffline: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    backgroundColor: '#545454'
+  },
+  footerText: {
+    color: '#f0f0f0',
+    fontSize: 11,
+  },
+  companyName: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: 'bold'
   },
 }));

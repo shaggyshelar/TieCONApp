@@ -381,10 +381,21 @@ getCurrentUser() {
     }
     else{
       return (
-        <Container style={[ styles.root]}>
-        <View style={[styles.loading]} >
-            <ActivityIndicator size='large' />
-        </View>
+        <Container style={[styles.root]}>
+          <ScrollView>
+            <View style={[styles.loading]} >
+              <ActivityIndicator size='large' />
+            </View>
+          </ScrollView>
+          <View style={styles.footerOffline}>
+            {
+              this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
+            }
+          </View>
+          <View style={styles.footer}>
+            <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
+            <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
+          </View>
         </Container>
     );
     }

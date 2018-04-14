@@ -1,0 +1,1 @@
+{"displayColor":{"type":"string","value":"#fdf1f1"},"endTime":{"type":"date","value":"2018-04-20T12:30:00.000Z"},"eventName":{"type":"string","value":"Networking Break"},"isBreak":{"type":"boolean","value":true},"room":{"type":"string","value":"Break-out Area"},"sessionType":{"type":"string","value":"break"},"startTime":{"type":"date","value":"2018-04-20T12:00:00.000Z"}}

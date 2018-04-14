@@ -1,0 +1,1 @@
+{"displayColor":{"type":"string","value":"#FFFACD"},"endTime":{"type":"date","value":"2018-04-20T10:30:00.000Z"},"eventName":{"type":"string","value":"Tea Break"},"isBreak":{"type":"boolean","value":true},"room":{"type":"string","value":"Break-out Area"},"sessionType":{"type":"string","value":"break"},"startTime":{"type":"date","value":"2018-04-20T10:00:00.000Z"}}

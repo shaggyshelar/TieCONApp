@@ -20,7 +20,7 @@ function renderIf(condition, content) {
 
 export class ProfileSettings extends React.Component {
   static navigationOptions = {
-    title: 'Profile Settings'.toUpperCase()
+    title: 'My Profile'.toUpperCase()
   };
 
   constructor(props) {

@@ -22,9 +22,9 @@
     },
     "android": {
       "package": "com.eternus.tieconpuneevents",
-      "versionCode": 18
+      "versionCode": 19
     },
-    "version": "1.0.3",
+    "version": "1.0.4",
     "primaryColor": "#ed1b24",
     "notification": {
       "icon": "./notificationIcon.png",

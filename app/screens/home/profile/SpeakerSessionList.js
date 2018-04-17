@@ -32,6 +32,7 @@ export class SpeakerSessionList extends RkComponent {
 
   fetchSessionList() {
     Service.getDocRef(TABLE)
+      .orderBy('startTime')
       .onSnapshot((snapshot) => {
         var sessions = [];
         snapshot.forEach((request) => {

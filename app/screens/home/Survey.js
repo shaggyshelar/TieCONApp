@@ -103,6 +103,13 @@ export class Survey extends RkComponent {
                 thisRef.setState({
                     questionsForm: form.Questions
                 })
+                let questionSet = [];
+                form.Questions.forEach(question => {
+                   questionSet.push({ Question: question.QuestionTitle, Answer: new Set() });
+                })
+                thisRef.setState({
+                    queArray: questionSet
+                })
            }
         }).catch(function (error) {
             console.log("Error getting document:", error);
@@ -144,16 +151,21 @@ export class Survey extends RkComponent {
         }
     }
     onFormSelectValue = (questionsForm) => {
-        let renderQuestions = this.state.questionsForm.map(Fitem => {
-            this.state.queArray.push({ Question: Fitem.QuestionTitle, Answer: new Set() });
-            return (
-                    <View style={{ marginLeft: 10 ,marginBottom :10}}>
+        if (this.state.questionsForm.length == 0) {
+            this.resetNavigation(thisRef.props.navigation, 'HomeMenu');
+        }
+        else {
+            let renderQuestions = this.state.questionsForm.map(Fitem => {
+                // this.state.queArray.push({ Question: Fitem.QuestionTitle, Answer: new Set() });
+                return (
+                    <View style={{ marginLeft: 10, marginBottom: 10 }}>
                         <Label style={{ flexDirection: 'row', fontFamily: RkTheme.current.fonts.family.regular, alignItems: 'center', marginTop: 3, marginBottom: 2, fontSize: 14 }}> {Fitem.QuestionTitle}</Label>
                         {this.renderAnswerField(Fitem)}
                     </View>
-            )
-        });
-        return  renderQuestions;
+                )
+            });
+            return renderQuestions;
+        }
     }
     renderAnswerField = (item) => {
         let answerInput = [];

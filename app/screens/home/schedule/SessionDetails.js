@@ -38,7 +38,8 @@ export class SessionDetails extends Component {
         currentSessionStart : Moment(this.sessionDetails.startTime).format(),
         currentSessionEnd  :  Moment(this.sessionDetails.endTime).format(),
         sameTimeRegistration : false,
-        isOffline : false
+        isOffline : false,
+        isAddingToAgenda :false
       }
   }
 /**check */
@@ -56,7 +57,6 @@ componentWillMount() {
           isOffline : true
         });
       }
-      
       this.setState({
         isOffline: !isConnected
       });
@@ -86,12 +86,12 @@ handleFirstConnectivityChange = (connectionInfo) => {
   });
 };
 
-componentWillUnmount() {
-  NetInfo.removeEventListener(
-    'connectionChange',
-    this.handleFirstConnectivityChange
-  );  
-}
+// componentWillUnmount() {
+//   NetInfo.removeEventListener(
+//     'connectionChange',
+//     this.handleFirstConnectivityChange
+//   );  
+// }
 getCurrentUser() {
     Service.getCurrentUser((userDetails) => {
       this.setState({
@@ -135,7 +135,7 @@ getCurrentUser() {
   getSurveyAccess = () => {
     if (this.state.showPanelButton == true && this.state.showFeedbackButton == true) {
       return (
-        <View style={{ width:Platform.OS === 'ios' ? 320 : 380 ,alignItems:'center' , flexDirection : 'row'}}>
+        <View style={{ width:Platform.OS === 'ios' ? 320 : 380 ,alignItems:'center' , flexDirection : 'row' , marginLeft :Platform.OS === 'android' ? 20 : 0  }}>
           <View style={{ width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
             <GradientButton colors={['#f20505', '#f55050']} text='Panel Q&A' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
               onPress={() => this.props.navigation.navigate('QueTab', { sessionDetails: this.state.sessionDetails })}
@@ -163,8 +163,8 @@ getCurrentUser() {
     }
   }
   getDuration = () => {
-    let endTime = Moment(this.state.endTime).format("hh:mm A");
-    let startTime = Moment(this.state.startTime).format("hh:mm A");
+    let endTime = Moment(this.state.endTime).format("HH:mm");
+    let startTime = Moment(this.state.startTime).format("HH:mm");
     let sessionDate = Moment(this.state.startTime).format("ddd, MMM DD, YYYY");
     return (<Text>{startTime} - {endTime} | {sessionDate} </Text>);
   }
@@ -175,10 +175,7 @@ getCurrentUser() {
         if (speaker.profileImageURL) {
           avatar = <Avatar rkType='small' style={{width: 44,height: 44,borderRadius: 20}} imagePath={speaker.profileImageURL} />
         } else {
-          //let firstLetter = speaker.firstName ? speaker.firstName[0] : '?';
-          //avatar = <RkText rkType='small' style={styles.avatar}>{firstLetter}</RkText>
-         // avatar = <Avatar rkType='small' style={{width: 44,height: 44,borderRadius: 20}} imagePath={require('../../../assets/images/defaultUserImg.png')} />
-          avatar = <Image style={{width: 44,height: 44,borderRadius: 20}} source={require('../../../assets/images/defaultUserImg.png')}/>
+           avatar = <Image style={{width: 44,height: 44,borderRadius: 20}} source={require('../../../assets/images/defaultUserImg.png')}/>
         }
         return (
           <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker,speakersId : this.state.speakers})}>
@@ -209,7 +206,20 @@ getCurrentUser() {
         </View>
       )
     }
-     else {
+     else if(!this.state.regStatus  &&  this.state.sessionDetails.sessionType == 'deepdive'){
+      return (
+        <View style = {[styles.attendBtn]} >
+          <RkButton
+            rkType='outline'
+            style ={{borderColor : '#f20505', borderRadius : 30 , width : 150 ,height :30}}
+            contentStyle={{ fontSize: 12 , color :'#f20505' }}
+            onPress={this.onAttendRequest}>
+            Pre-Register
+            </RkButton>
+        </View>
+      );
+    }
+    else{
       return (
         <View style = {[styles.attendBtn]} >
           <RkButton
@@ -224,34 +234,63 @@ getCurrentUser() {
     }
   }
   onAttendRequest = (event) => {
-    if(this.state.sameTimeRegistration == true){
-      Alert.alert("Already registered for same time in other session");
+    this.setState({
+      isAddingToAgenda : true
+    });
+    let today =new Date();
+    if(Moment(new Date()).isBefore( Moment(this.state.sessionDetails.endTime))){
+      if(this.state.sameTimeRegistration == true){
+        this.setState({
+          isAddingToAgenda : false
+        });
+        Alert.alert("Already registered for same time in other session");
+      }
+      else{
+        const attendeeId = this.state.userObj.uid;
+        if(this.state.sessionDetails.speakers == undefined ){
+          this.state.sessionDetails.speakers = [];
+        }
+        if(this.state.sessionDetails.description == undefined ){
+          this.state.sessionDetails.description = "";
+        }
+        if(this.state.sessionDetails.sessionType == undefined ){
+          this.state.sessionDetails.sessionType = "";
+        }
+        let attendRequest = {
+          sessionId: this.state.sessionDetails.key,
+          session: this.state.sessionDetails,
+          registeredAt: new Date(),
+          status: this.state.sessionDetails.isRegrequired ? "Pending" : "Remove From Agenda",
+          attendee: {},
+          attendeeId: attendeeId
+        }
+        Service.getDocRef("RegistrationResponse").add(attendRequest).then((req) => {
+          this.setState({
+            regId: req.id,
+            regStatus: attendRequest.status,
+            isAddingToAgenda : false
+          });
+        }).catch((error) => {
+          console.warn(error);
+        });
+      }
     }
     else{
-      const attendeeId = this.state.userObj.uid;
-      let attendRequest = {
-        sessionId: this.state.sessionDetails.key,
-        session: this.state.sessionDetails,
-        registeredAt: new Date(),
-        status: this.state.sessionDetails.isRegrequired ? "Pending" : "Remove From Agenda",
-        attendee: {},
-        attendeeId: attendeeId
-      }
-      Service.getDocRef("RegistrationResponse").add(attendRequest).then((req) => {
-        this.setState({
-          regId: req.id,
-          regStatus: attendRequest.status,
-        });
-      }).catch((error) => {
-        console.warn(error);
+      this.setState({
+        isAddingToAgenda : false
       });
+      Alert.alert("You cannot add past session to Agenda");
     }
   }
   onCancelRequest = (event) => {
+    this.setState({
+      isAddingToAgenda : true
+    });
     Service.getDocRef("RegistrationResponse").doc(this.state.regId).delete().then((req) => {
         this.setState({
           regStatus: "",
-          regId: ""
+          regId: "",
+          isAddingToAgenda : false
         })
     }).catch((error) => {
         console.warn(error);
@@ -378,6 +417,26 @@ getCurrentUser() {
           </View>
       </Container>
       )
+    }
+    else if((this.state.showPanelButton == true || this.state.showFeedbackButton == true) && this.state.isAddingToAgenda == true){
+      return (
+        <Container style={[styles.root]}>
+          <ScrollView>
+            <View style={[styles.loading]} >
+              <ActivityIndicator size='large' />
+            </View>
+          </ScrollView>
+          <View style={styles.footerOffline}>
+            {
+              this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
+            }
+          </View>
+          <View style={styles.footer}>
+            <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
+            <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
+          </View>
+        </Container>
+    );
     }
     else{
       return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import {  View,Icon,Tab,TabHeading,Tabs } from 'native-base';
+import {  View,Icon,Tab,TabHeading,Tabs,Container } from 'native-base';
 import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Platform ,Alert, AsyncStorage,ScrollView,Text,Image ,ActivityIndicator} from 'react-native';
 import { RkComponent, RkTheme, RkText, RkAvoidKeyboard,RkStyleSheet, RkButton, RkCard, RkTextInput } from 'react-native-ui-kitten';
 import { NavigationActions } from 'react-navigation';
@@ -30,7 +30,8 @@ export default class AskQuestion extends RkComponent {
             queAccess: "",
             questionStatus: false,
             AskQFlag: true,
-            isLoaded : false
+            isLoaded : false,
+            componentLoaded : true
         }
     }
     componentWillMount() {
@@ -95,6 +96,9 @@ export default class AskQuestion extends RkComponent {
             });
     }
     onSubmit = () => {
+        this.setState({
+            componentLoaded : false
+        });
         let thisRef = this;
         let que = this.state.Question;
         let user = this.state.currentUser;
@@ -111,7 +115,8 @@ export default class AskQuestion extends RkComponent {
                 })
                 .then(function (docRef) {
                     thisRef.setState({
-                        Question: ""
+                        Question: "",
+                        componentLoaded : true
                     })
                     Alert.alert("Question submitted successfully");
                     thisRef.getQuestions();
@@ -324,29 +329,42 @@ export default class AskQuestion extends RkComponent {
         }
     }
     render() {
-        return (
-            <ScrollView>
-                <RkAvoidKeyboard
-                    onStartShouldSetResponder={(e) => true}
-                    onResponderRelease={(e) => Keyboard.dismiss()}>
-
-                    {this.state.AskQFlag &&
-                        <View style={{ flexDirection: 'row' }} pointerEvents={this.state.queAccess}>
-                            <RkTextInput type="text" style={{ width: 300, marginRight: 10 }} placeholder="Enter your question here..." value={this.state.Question} name="Question" onChangeText={(text) => this.onChangeInputText(text)} />
-                            <RkText style={{ fontSize: 35, width: 46, height: 46, marginLeft: 8 }} onPress={() => this.onSubmit()}><Icon name="md-send" /> </RkText>
+        if(this.state.componentLoaded){
+            return (
+                <ScrollView>
+                    <RkAvoidKeyboard
+                        onStartShouldSetResponder={(e) => true}
+                        onResponderRelease={(e) => Keyboard.dismiss()}>
+    
+                        {this.state.AskQFlag &&
+                            <View style={{ flexDirection: 'row' }} pointerEvents={this.state.queAccess}>
+                                <RkTextInput type="text" style={{ width: 300,alignItems :'flex-start'  }} placeholder="Enter your question here..." value={this.state.Question} name="Question" onChangeText={(text) => this.onChangeInputText(text)} />
+                                <TouchableOpacity onPress={() => this.onSubmit()}>
+                                <RkText style={{ fontSize: 35, width: 46, height: 46,alignItems :'flex-end'}} ><Icon name="md-send" /> </RkText>
+                                </TouchableOpacity>
+                            </View>
+                        }
+                        {!this.state.AskQFlag &&
+                            <View style={{ flexDirection: 'row' }}>
+                                <RkText style={{ fontSize: 15, height: 46, marginRight: 10, marginLeft: 4 }}> Questions can be asked only when session is active... </RkText>
+                            </View>
+                        }
+                        <View>
+                            {this.checkIfLoaded()}
                         </View>
-                    }
-                    {!this.state.AskQFlag &&
-                        <View style={{ flexDirection: 'row' }}>
-                            <RkText style={{ fontSize: 15, height: 46, marginRight: 10, marginLeft: 4 }}> Questions can be asked only when session is active... </RkText>
-                        </View>
-                    }
-                    <View>
-                        {this.checkIfLoaded()}
-                    </View>
-                </RkAvoidKeyboard>
-            </ScrollView>
-        );
+                    </RkAvoidKeyboard>
+                </ScrollView>
+            );
+        }
+        else{
+            return (
+                <Container style={styles.root}>
+                <View style={styles.loading} >
+                    <ActivityIndicator size='large' />
+                </View>
+                </Container>
+            );
+        }   
     }
 }
 

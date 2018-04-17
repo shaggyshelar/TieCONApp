@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, Icon } from 'native-base';
-import { FlatList, SectionList, StyleSheet, ActivityIndicator, AsyncStorage, TouchableOpacity, Alert, Image ,ScrollView} from 'react-native';
+import { FlatList, SectionList, StyleSheet, ActivityIndicator, AsyncStorage, TouchableOpacity, Alert, Image, ScrollView } from 'react-native';
 import { RkComponent, RkTheme, RkText, RkButton, RkCard } from 'react-native-ui-kitten';
 import ScheduleTile from './Schedule-tile';
 import Moment from 'moment';
@@ -57,31 +57,40 @@ export default class MyAgenda extends React.Component {
         });
     }
     renderSessions = () => {
-        return this.state.sessionList.map(session => {
+        if (this.state.sessionList.length > 0) {
+            return this.state.sessionList.map(session => {
+                return (
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('SessionDetails', { session: session })}
+                    >
+                        <RkCard rkType='shadowed' style={styles.card}>
+                            <View style={styles.header}>
+                                <View style={styles.mainHeader}>
+                                    <Text style={styles.headerText}>{session.eventName}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'column', alignItems: 'flex-end', flex: 3 }}>
+                                    <RkText  ><Icon name="ios-arrow-forward" /></RkText>
+                                </View>
+                            </View >
+                            <View style={styles.content}>
+                                <View
+                                    style={styles.tileFooter}>
+                                    {this.getDuration(session)}
+                                    {this.getLocation(session)}
+                                </View>
+                            </View>
+                        </RkCard>
+                    </TouchableOpacity>
+                );
+            });
+        }
+        else {
             return (
-                <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate('SessionDetails', { session: session })}
-                >
-                    <RkCard rkType='shadowed' style={styles.card}>
-                        <View style={styles.header}>
-                            <View style={styles.mainHeader}>
-                                <Text style={styles.headerText}>{session.eventName}</Text>
-                            </View>
-                            <View style={{ flexDirection: 'column', alignItems: 'flex-end', flex: 3 }}>
-                                <RkText  ><Icon name="ios-arrow-forward" /></RkText>
-                            </View>
-                        </View >
-                        <View style={styles.content}>
-                            <View
-                                style={styles.tileFooter}>
-                                {this.getDuration(session)}
-                                {this.getLocation(session)}
-                            </View>
-                        </View>
-                    </RkCard>
-                </TouchableOpacity>
+                <View style={styles.loading}>
+                    <RkText>No Sessions Found</RkText>
+                </View>
             );
-        });
+        }
     }
     getDuration = (session) => {
         let endTime = Moment(session.endTime).format("hh:mm A");
@@ -104,16 +113,6 @@ export default class MyAgenda extends React.Component {
     }
     render() {
         let sessionList = this.renderSessions();
-        //let sessionsList;
-        // if(this.state.sessionList && this.state.sessionList.length > 0 ){
-        //     sessionList = (<FlatList
-        //             data={this.state.sessionList}
-        //             keyExtractor={(item, index) => index}
-        //             renderItem={({item, index}) => <ScheduleTile user={this.state.user} navigation={this.props.navigation} session={item}/>}
-        //         />)
-        // }else{
-        //     sessionList = (<Text>No session added to agenda yet</Text>)
-        // }
         if (!this.state.isLoaded) {
             return (
                 <View style={styles.loading} >
@@ -125,7 +124,7 @@ export default class MyAgenda extends React.Component {
             return (
                 <View style={styles.listContainer}>
                     <ScrollView>
-                    {sessionList}
+                        {sessionList}
                     </ScrollView>
                 </View >
             );

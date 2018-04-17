@@ -262,7 +262,8 @@ getCurrentUser() {
           registeredAt: new Date(),
           status: this.state.sessionDetails.isRegrequired ? "Pending" : "Remove From Agenda",
           attendee: {},
-          attendeeId: attendeeId
+          attendeeId: attendeeId,
+          sessionDate : this.state.sessionDetails.startTime
         }
         Service.getDocRef("RegistrationResponse").add(attendRequest).then((req) => {
           this.setState({

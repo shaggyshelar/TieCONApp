@@ -29,6 +29,7 @@ export default class MyAgenda extends React.Component {
         Service.getCurrentUser((user) => {
             Service.getDocRef(TABLE)
                 .where('attendeeId', '==', user.uid)
+                .orderBy('sessionDate')
                 .onSnapshot((snapshot) => {
                     var sessions = [];
                     let allSpeakers = [];

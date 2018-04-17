@@ -13,7 +13,7 @@ function renderIf(condition, content) {
 
 export class VenueMap extends React.Component {
   static navigationOptions = {
-    title: 'Venue Map'.toUpperCase()
+    title: 'Location Map'.toUpperCase()
   };
 
   constructor(props) {

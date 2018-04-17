@@ -103,6 +103,13 @@ export class Survey extends RkComponent {
                 thisRef.setState({
                     questionsForm: form.Questions
                 })
+                let questionSet = [];
+                form.Questions.forEach(question => {
+                   questionSet.push({ Question: question.QuestionTitle, Answer: new Set() });
+                })
+                thisRef.setState({
+                    queArray: questionSet
+                })
            }
         }).catch(function (error) {
             console.log("Error getting document:", error);
@@ -144,16 +151,21 @@ export class Survey extends RkComponent {
         }
     }
     onFormSelectValue = (questionsForm) => {
-        let renderQuestions = this.state.questionsForm.map(Fitem => {
-            this.state.queArray.push({ Question: Fitem.QuestionTitle, Answer: new Set() });
-            return (
-                    <View style={{ marginLeft: 10 ,marginBottom :10}}>
-                        <Label style={{ flexDirection: 'row', fontFamily: RkTheme.current.fonts.family.regular, alignItems: 'center', marginTop: 3, marginBottom: 2, fontSize: 14 }}> {Fitem.QuestionTitle}</Label>
+        if (this.state.questionsForm.length == 0) {
+            this.resetNavigation(thisRef.props.navigation, 'HomeMenu');
+        }
+        else {
+            let renderQuestions = this.state.questionsForm.map(Fitem => {
+                // this.state.queArray.push({ Question: Fitem.QuestionTitle, Answer: new Set() });
+                return (
+                    <View style={{ marginLeft: 10, marginBottom: 10 }}>
+                        <RkText style={{ flexDirection: 'row',fontWeight : 'bold', fontFamily: RkTheme.current.fonts.family.regular, alignItems: 'center', marginTop: 3, marginBottom: 2, fontSize: 16 }}> {Fitem.QuestionTitle}</RkText>
                         {this.renderAnswerField(Fitem)}
                     </View>
-            )
-        });
-        return  renderQuestions;
+                )
+            });
+            return renderQuestions;
+        }
     }
     renderAnswerField = (item) => {
         let answerInput = [];
@@ -167,7 +179,7 @@ export class Survey extends RkComponent {
 
             answerInput:
             return (
-                <RkChoiceGroup radio style={{ marginTop: 3, marginBottom: 3 }} onChange={(id) => { this.onMultiChoiceChange(item.value, item.QueId, id) }} >
+                <RkChoiceGroup radio style={{ marginTop: 3, marginBottom: 3, flexDirection: 'row' }} onChange={(id) => { this.onMultiChoiceChange(item.value, item.QueId, id) }} >
                     {this.onRenderMultiChoice(item.value, item.QueId)}
                 </RkChoiceGroup>
             )
@@ -176,7 +188,7 @@ export class Survey extends RkComponent {
 
             answerInput:
             return (
-                <RkChoiceGroup style={{ marginTop: 0, marginBottom: 3 }}>
+                <RkChoiceGroup style={{ marginTop: 0, marginBottom: 3, flexDirection: 'row' }}>
                     {this.onRenderCheckBox(item.value, item.QueId)}
                 </RkChoiceGroup >
             )
@@ -254,11 +266,15 @@ export class Survey extends RkComponent {
                 <Container style={[styles.screen]}>
                     <ScrollView>
                             {this.onFormSelectValue(this.state.questionsForm)}
-                            <GradientButton colors={['#f20505', '#f55050']} text='Submit'
+                            {/* <GradientButton colors={['#f20505', '#f55050']} text='Submit'
+                                style={[styles.Gradbtn]}
+                                onPress={() => this.onSubmitResponse()}
+                            /> */}
+                    </ScrollView>
+                    <GradientButton colors={['#f20505', '#f55050']} text='Submit'
                                 style={[styles.Gradbtn]}
                                 onPress={() => this.onSubmitResponse()}
                             />
-                    </ScrollView>
                     <View style={[styles.footerOffline]}>
                         {
                             this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null

@@ -169,6 +169,7 @@ getCurrentUser() {
     return (<Text>{startTime} - {endTime} | {sessionDate} </Text>);
   }
   getSpeakers = () => {
+    console.log("Speakers", this.state.speakerDetails);
     return this.state.speakerDetails
       .map((speaker, index) => {
         let avatar;
@@ -194,27 +195,42 @@ getCurrentUser() {
 
   attendRequestStatus = () => {
     if (this.state.regStatus) {
-      return (
-        <View style = {[styles.attendBtn]}>
-          <RkButton rkType='outline'
-            onPress={this.onCancelRequest}
-            style ={{borderColor : '#f20505',borderRadius : 30 , width : 150 ,height :30}}
-            contentStyle={{ fontSize: 12 , color: '#f20505' }}
-          >
-            {this.state.regStatus}
-            </RkButton>
-        </View>
-      )
+      if(this.state.sessionDetails.sessionType == 'deepdive'){
+        return (
+          <View style = {[styles.attendBtn]}>
+            <RkButton rkType='outline'
+              onPress={this.onCancelRequest}
+              style ={{borderColor : '#f20505',borderRadius : 30 , width : 100 ,height :30}}
+              contentStyle={{ fontSize: 12 , color: '#f20505' }}
+            >
+             De-Register
+              </RkButton>
+          </View>
+        )
+      }
+      else{
+        return (
+          <View style = {[styles.attendBtn]}>
+            <RkButton rkType='outline'
+              onPress={this.onCancelRequest}
+              style ={{borderColor : '#f20505',borderRadius : 30 , width : 150 ,height :30}}
+              contentStyle={{ fontSize: 12 , color: '#f20505' }}
+            >
+              {this.state.regStatus}
+              </RkButton>
+          </View>
+        )
+      } 
     }
      else if(!this.state.regStatus  &&  this.state.sessionDetails.sessionType == 'deepdive'){
       return (
         <View style = {[styles.attendBtn]} >
           <RkButton
             rkType='outline'
-            style ={{borderColor : '#f20505', borderRadius : 30 , width : 150 ,height :30}}
+            style ={{borderColor : '#f20505', borderRadius : 30 , width : 100 ,height :30}}
             contentStyle={{ fontSize: 12 , color :'#f20505' }}
             onPress={this.onAttendRequest}>
-            Pre-Register
+            Register
             </RkButton>
         </View>
       );

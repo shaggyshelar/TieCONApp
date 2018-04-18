@@ -127,6 +127,9 @@ export default class AskQuestion extends RkComponent {
         }
         else {
             Alert.alert("Please fill the question field...");
+            thisRef.setState({
+                componentLoaded : true
+            })
         }
     }
     onChangeInputText = (text) => {
@@ -166,7 +169,7 @@ export default class AskQuestion extends RkComponent {
                                         <Text style={{ fontSize: 15 }} >{question.questionSet.Question}</Text>
                                     </View>
                                     <View style={{ flex: 2, justifyContent: 'center' }} >{this.checkLikeStatus(question)}
-                                        <Text style={{ fontSize: 10 }}>{votesCount}</Text>
+                                        {/* <Text style={{ fontSize: 10 }}>{votesCount}</Text> */}
                                     </View>
                                 </View>
 
@@ -203,7 +206,7 @@ export default class AskQuestion extends RkComponent {
         if (voterStatus == true) {
             return (
                 //bl
-                <Text style={{ fontSize: 25, width: 36, height: 36 }} onPress={() => this.onUnikeQuestion(question)}><Icon name="md-thumbs-up" style={{ color: '#3872d1' }} /></Text>
+                <Text style={{ fontSize: 25, width: 36, height: 36 }} ><Icon name="md-thumbs-up" style={{ color: '#3872d1' }} /></Text>
             );
         }
         else {

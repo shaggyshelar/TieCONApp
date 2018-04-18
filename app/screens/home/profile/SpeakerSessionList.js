@@ -53,6 +53,7 @@ export class SpeakerSessionList extends RkComponent {
                   endTime: session.endTime,
                   description: session.description,
                   speakersDetails: [],
+                  sessionType : session.sessionType
                 });
               }
             }

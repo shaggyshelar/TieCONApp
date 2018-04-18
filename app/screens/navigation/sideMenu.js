@@ -21,7 +21,7 @@ export class SideMenu extends React.Component {
   
   componentWillMount() {
     AsyncStorage.getItem("USER_DETAILS").then((userDetails)=>{
-       this.setState({userDetails: JSON.parse(userDetails)})
+       this.setState({userDetails: JSON.parse(userDetails)});
       })
       .catch(err => {
         console.warn('Errors');
@@ -117,7 +117,9 @@ export class SideMenu extends React.Component {
               <View style={styles.content}>
                 <RkText style={[styles.icon, styles.sidebarIcon]}
                         rkType='moon primary xlarge'><Icon name="ios-exit"/></RkText>
-                <RkText style={styles.sidebarMenuName}>Logout</RkText>
+                <RkText style={styles.sidebarMenuName}>Logout </RkText>
+                <RkText style={styles.sidebarMenuName}> {this.state.userDetails.fullName}</RkText>
+
               </View>
               <RkText rkType='awesome secondaryColor small' style={styles.rightIcon}>{FontAwesome.chevronRight}</RkText>
             </View>

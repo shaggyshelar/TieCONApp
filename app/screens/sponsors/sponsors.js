@@ -46,78 +46,28 @@ export class Sponsors extends RkComponent {
             });
     }
 
-    viewWebsite = (url) => {
-        return (
-            <View style={[styles.attendBtn]}>
-                <TouchableOpacity>
-                    <RkButton rkType='outline' onPress={() => Linking.openURL(url)}
-                        style={{ borderColor: '#f20505', borderRadius: 30, width: 100, height: 25 }}
-                        contentStyle={{ fontSize: 10, color: '#f20505' }}
-                    >
-                        View Website
-            </RkButton>
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
-    getBorderColor(orderNumber) {
-        let displayColor = '#ffffff';
-        switch (orderNumber) {
-            case 1:
-                displayColor = '#1E90FF';
-                break;
-            case 2:
-                displayColor = '#DAA520';
-                break;
-            case 3:
-                displayColor = '#808080';
-                break;
-            case 4:
-                displayColor = '#8B0000';
-                break;
-            case 5:
-                displayColor = '#008B8B';
-                break;
-            case 6:
-                displayColor = '#000000';
-                break;
-            case 7:
-                displayColor = '#2F4F4F';
-                break;
-            case 8:
-                displayColor = '#808080';
-                break;
-        }
-        return displayColor;
-    }
-
     displaySponsers = () => {
         return this.state.Sponsers.map((sponser, index) => {
             let avatar;
-            let displayColor;
-            displayColor = this.getBorderColor(sponser.sponserData.orderNumber)
             if (sponser.sponserData.imageURL) {
-                avatar = <Image style={{ width: 50, height: 50 }} source={{ uri: sponser.sponserData.imageURL }} />
+                avatar = <Image style={{ width: 60, height: 60 }} source={{ uri: sponser.sponserData.imageURL }} />
             } else {
-                avatar = <Image style={{ width: 50, height: 40 }} source={require('../../assets/images/defaultSponsorImg.png')} />
+                avatar = <Image style={{ width: 60, height: 60 }} source={require('../../assets/images/defaultSponsorImg.png')} />
             }
             return (
-                <RkCard rkType='shadowed' style={[styles.card, { borderLeftColor: displayColor, borderLeftWidth: 3 }]}>
-                    <View style={{ flexDirection: 'row' }}>
-                        <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, marginLeft: 5, flex: 4 }}>
-                            {avatar}
-                        </View>
-                        <View style={{ flexDirection: 'column', marginVertical: 10, flex: 4 }}>
-                            <Text style={styles.headerText}>{sponser.sponserData.category}</Text>
-                            <Text style={styles.infoText}>{sponser.sponserData.name}</Text>
+                <TouchableOpacity onPress={() => Linking.openURL(sponser.sponserData.websiteURL)}>
+                    <RkCard rkType='shadowed' style={[styles.card]}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
+                                {avatar}
+                            </View>
+                            <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>
+                                <Text style={styles.headerText}>{sponser.sponserData.category}</Text>
+                                <Text style={styles.infoText}>{sponser.sponserData.name}</Text>
+                            </View >
                         </View >
-
-                        <View style={{ alignItems: 'center' }}>
-                            {this.viewWebsite(sponser.sponserData.websiteURL)}
-                        </View>
-                    </View >
-                </RkCard>
+                    </RkCard>
+                </TouchableOpacity>
             )
         });
     }
@@ -170,8 +120,7 @@ let styles = RkStyleSheet.create(theme => ({
     },
     card: {
         margin: 1,
-        padding: 4,
-        alignItems: 'center'
+        padding: 4
     },
     header: {
         flexDirection: 'row'

@@ -217,7 +217,7 @@ export class RegisterUserToSession extends React.Component {
                 sessionId: thisRef.state.selectedSession,
                 session: selectedSession,
                 registeredAt: new Date(),
-                status: selectedSession.isRegrequired ? "Pending" : "Remove From Agenda",
+                status: selectedSession.sessionType == 'deepdive' ? 'De-Register' : 'Remove From Agenda',
                 attendee: {},
                 attendeeId: attendeeId,
                 sessionDate : selectedSession.startTime

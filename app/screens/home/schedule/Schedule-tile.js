@@ -259,6 +259,9 @@ export default class ScheduleTile extends RkComponent {
         if (session.sessionType == 'deepdive') {
             return <Text style={this.styles.speaker} style={{ fontSize: 10, color: 'red' }}>**Pre-registration required**</Text>;
         }
+        else if(session.sessionType == 'invite'){
+            return <Text style={this.styles.speaker} style={{ fontSize: 10, color: 'red' }}>**By invitation only**</Text>;            
+        }
         else {
             return <View></View>;
         }

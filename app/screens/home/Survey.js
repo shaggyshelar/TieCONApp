@@ -1,6 +1,6 @@
 import React from 'react';
 import {ScrollView, Platform,NetInfo} from 'react-native';
-import { Text, View, Icon, Container, Label } from 'native-base';
+import { Text, View, Icon, Container, Label ,Input} from 'native-base';
 import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Alert, AsyncStorage ,ActivityIndicator} from 'react-native';
 import { RkComponent, RkTheme,RkStyleSheet, RkText, RkAvoidKeyboard, RkButton, RkCard, RkChoice, RkTextInput, RkChoiceGroup } from 'react-native-ui-kitten';
 import { NavigationActions } from 'react-navigation';
@@ -158,10 +158,12 @@ export class Survey extends RkComponent {
             let renderQuestions = this.state.questionsForm.map(Fitem => {
                 // this.state.queArray.push({ Question: Fitem.QuestionTitle, Answer: new Set() });
                 return (
+                    <RkCard>
                     <View style={{ marginLeft: 10, marginBottom: 10 }}>
-                        <RkText style={{ flexDirection: 'row',fontWeight : 'bold', fontFamily: RkTheme.current.fonts.family.regular, alignItems: 'center', marginTop: 3, marginBottom: 2, fontSize: 16 }}> {Fitem.QuestionTitle}</RkText>
+                        <RkText style={{ flexDirection: 'row',fontWeight : 'bold', fontFamily: RkTheme.current.fonts.family.regular, alignItems: 'center', marginTop: 3, marginBottom: 2, fontSize: 16 ,fontWeight :'bold' }}> {Fitem.QuestionTitle}</RkText>
                         {this.renderAnswerField(Fitem)}
                     </View>
+                    </RkCard>
                 )
             });
             return renderQuestions;
@@ -173,13 +175,13 @@ export class Survey extends RkComponent {
 
            answerInput :
             return (
-                <RkTextInput type="text" placeholder="Answer" name="Answer" onChangeText={(text) => this.onTextChange(text, item.QueId)} id={item.QueId} />
+                <Input type="text" placeholder="Answer" multiline = {true} numberOfLines = {4} name="Answer" onChangeText={(text) => this.onTextChange(text, item.QueId)} id={item.QueId} />
             )
         } else if (item.AnswerFeild == "Mulitple Choice") {
 
             answerInput:
             return (
-                <RkChoiceGroup radio style={{ marginTop: 3, marginBottom: 3, flexDirection: 'row' }} onChange={(id) => { this.onMultiChoiceChange(item.value, item.QueId, id) }} >
+                <RkChoiceGroup radio style={{ marginTop: 3, marginBottom: 3 }} onChange={(id) => { this.onMultiChoiceChange(item.value, item.QueId, id) }} >
                     {this.onRenderMultiChoice(item.value, item.QueId)}
                 </RkChoiceGroup>
             )
@@ -188,7 +190,7 @@ export class Survey extends RkComponent {
 
             answerInput:
             return (
-                <RkChoiceGroup style={{ marginTop: 0, marginBottom: 3, flexDirection: 'row' }}>
+                <RkChoiceGroup style={{ marginTop: 0, marginBottom: 3}}>
                     {this.onRenderCheckBox(item.value, item.QueId)}
                 </RkChoiceGroup >
             )

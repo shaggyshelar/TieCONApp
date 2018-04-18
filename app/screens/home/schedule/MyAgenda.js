@@ -46,6 +46,7 @@ export default class MyAgenda extends React.Component {
                             endTime: session.endTime,
                             description: session.description,
                             speakersDetails: session.speakersDetails,
+                            sessionType :session.sessionType
                         });
                     });
                     this.setState({

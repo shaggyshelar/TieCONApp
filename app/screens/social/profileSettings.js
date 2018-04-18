@@ -230,7 +230,7 @@ getCurrentUser() {
             </View>
           </View>
 
-          <View style={styles.section}>
+          {/* <View style={styles.section}>
             <View style={[styles.row, styles.heading]}>
               <RkText rkType='header6 primary'>Linkedin Details</RkText>
             </View>
@@ -243,7 +243,7 @@ getCurrentUser() {
               <RkText rkType='header4' style={{fontSize: 16, marginBottom: 15}}>{this.state.linkedInSummary}</RkText>
             </View>
             <GradientButton style={{fontSize: 16 }} colors={['#E7060E', '#f55050']} rkType='large' style={styles.button} text='Update from Linkedin Profile' onPress={() => this.getLinkedinProfileDetails()} />
-          </View>
+          </View> */}
           {/* {renderIf(!this.state.isLinkedInConnected,
             <GradientButton rkType='large' style={styles.button} text='Connect to Linkedin' onPress={() => this.modal.open()} />
           )} */}

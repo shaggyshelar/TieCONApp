@@ -6,6 +6,7 @@ import { GradientButton } from '../../components/gradientButton';
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import firebase from '../../config/firebase';
 import Moment from 'moment';
+import { Service } from '../../services';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -26,7 +27,8 @@ export class RegisterUserToSession extends React.Component {
       isOffline: false,
       userId: '',
       sessions: [],
-      isLoading: true
+      isLoading: true,
+      speakerDetails : []
     }
     this._getSesssionsFromServer = this._getSesssionsFromServer.bind(this);
   }
@@ -80,15 +82,18 @@ export class RegisterUserToSession extends React.Component {
     let db = firebase.firestore();
     let thisRef = this;
     let sessions = [];
-    db.collection("Sessions").get().then(function (querySnapshot) {
+    db.collection("Sessions")
+    .where('sessionType' , '==', 'deepdive')
+    .get()
+    .then(function (querySnapshot) {
+      let speakerArray = [];
       querySnapshot.forEach(function (doc) {
         let sessionData = doc.data();
         sessionData['id'] = doc.id;
-        if (sessionData.sessionType == 'deepdive') {
           sessionData['eventName'] = sessionData.eventName + '(' + sessionData.room + ')';
           sessions.push(sessionData);
-        }
       });
+
       if (sessions.length > 0) {
         let selectedSession = sessions[0];
         thisRef.setState({ sessions, selectedSession: selectedSession.id, isLoading: false });
@@ -190,6 +195,9 @@ export class RegisterUserToSession extends React.Component {
   }
 
   checkAlreadyRegistered = (attendeeId, selectedSession ) => {
+    this.setState({
+      isLoading : true
+    })
     let thisRef = this;
     let currentSessionStart = Moment(selectedSession.startTime).format();
     let currentSessionEnd  = Moment(selectedSession.endTime).format();
@@ -207,6 +215,9 @@ export class RegisterUserToSession extends React.Component {
             }
           });
           if(isAlreadyRegistered) {
+            this.setState({
+              isLoading : false
+            })
             Alert.alert(
               'Error',
               'This user is already registered for some other session for same time.',
@@ -216,6 +227,19 @@ export class RegisterUserToSession extends React.Component {
               { cancellable: false }
             );
           } else {
+            if (selectedSession.description == undefined) {
+              selectedSession.description = "";
+            }
+            if (selectedSession.sessionType == undefined) {
+              selectedSession.sessionType = "";
+            }
+            if (selectedSession.speakers == undefined) {
+              selectedSession.speakers = [];
+              selectedSession.speakersDetails = [];
+            }
+            else{
+              selectedSession.speakersDetails = [];
+            }
             let attendRequest = {
               sessionId: thisRef.state.selectedSession,
               session: selectedSession,
@@ -226,6 +250,9 @@ export class RegisterUserToSession extends React.Component {
               sessionDate : selectedSession.startTime
             };
             firebase.firestore().collection("RegistrationResponse").add(attendRequest).then((req) => {
+              this.setState({
+                isLoading : false
+              })
               Alert.alert(
                 'Registered',
                 'Registration successfull.',
@@ -262,16 +289,8 @@ export class RegisterUserToSession extends React.Component {
         ],
         { cancellable: false }
       );
-    } else if (this.state.userId.length != 8) {
-      Alert.alert(
-        'Invalid User ID',
-        'Invalid length of user ID. Proper format is \'Del-2002\'.',
-        [
-          { text: 'Ok', onPress: () => { } },
-        ],
-        { cancellable: false }
-      );
-    } else {
+    } 
+    else {
       let parsedUserInfo = this.state.userId.split("-");
       if (parsedUserInfo.length != 2) {
         Alert.alert(

@@ -20,7 +20,7 @@ export class SessionDetails extends Component {
     this.sessionDetails = this.props.navigation.state.params.session,
       this.state = {
         sessionDetails: this.props.navigation.state.params.session,
-        speakerDetails: this.sessionDetails.speakersDetails,
+        speakerDetails: this.sessionDetails.speakersDetails ,
         speakers: this.sessionDetails.speakers,
         sessionId: this.props.navigation.state.params.session.key,
         user: "",
@@ -98,6 +98,7 @@ getCurrentUser() {
         user: userDetails.firstName + " " + userDetails.lastName,
         userObj: userDetails
       });
+      this.retrieveSpeakers();
       this.checkSurveyResponse();
       this.fetchRegistrationStatus();
     });
@@ -126,9 +127,24 @@ getCurrentUser() {
   }
 
   onSurvey= ()=> {
-    if(this.state.sessionDetails.startTime.getTime() < (new Date()).getTime()){
-      this.props.navigation.navigate('Survey', { sessionDetails: this.state.sessionDetails });
-    }else{
+    if (this.state.sessionDetails.startTime.getTime() < (new Date()).getTime()) {
+      Service.getDocRef("SessionSurvey")
+        .where("SessionId", "==", this.state.sessionId)
+        .where("ResponseBy", "==", this.state.userObj.uid)
+        .get().then((snapshot) => {
+          if (snapshot.size == 0) {
+            this.props.navigation.navigate('Survey', { sessionDetails: this.state.sessionDetails });
+          }
+          else {
+            Alert.alert("You have already given feedback for this session");
+          }
+          //this.getSurveyAccess();
+        })
+        .catch(function (err) {
+          console.log("err", err);
+        });
+    } 
+    else {
       Alert.alert("Its too early to give feedback for this session");
     }
   }
@@ -151,10 +167,17 @@ getCurrentUser() {
     }
     else if (this.state.showPanelButton == true) {
       return (
-        <View style={{width:Platform.OS === 'ios' ? 320 : 360, alignItems : 'center' }} >
-          <GradientButton colors={['#f20505', '#f55050']} text='Panel Q&A' style={{ width: Platform.OS === 'ios' ? 300 : 340 , alignSelf : 'center'}}
-            onPress={() => this.props.navigation.navigate('QueTab', { sessionDetails: this.state.sessionDetails })}
-          />
+        <View style={{ width:Platform.OS === 'ios' ? 320 : 380 ,alignItems:'center' , flexDirection : 'row' , marginLeft :Platform.OS === 'android' ? 20 : 0  }}>
+          <View style={{ width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
+            <GradientButton colors={['#f20505', '#f55050']} text='Panel Q&A' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
+              onPress={() => this.props.navigation.navigate('QueTab', { sessionDetails: this.state.sessionDetails })}
+            />
+          </View>
+          <View style={{  width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
+            <GradientButton colors={['#f20505', '#f55050']} text='Feedback' style={{  width: Platform.OS === 'ios' ? 150 :170 ,alignSelf : 'center'}}
+              onPress={this.onSurvey}
+            />
+          </View>
         </View>
       );
     }
@@ -193,7 +216,22 @@ getCurrentUser() {
         });
     }
   }
-
+  retrieveSpeakers = () =>{
+    let speakerArray = [];
+    if(this.state.sessionDetails.speakers){
+      this.state.sessionDetails.speakers.forEach((speaker, index) => {
+        Service.getDocument("Attendee", speaker, (data, id) => {
+          data.id =id;
+          speakerArray[index] = data;
+          this.setState({
+            speakerDetails : speakerArray
+          })
+        }, function (error) {
+          console.warn(error);
+        });
+      })
+    }
+  }
   attendRequestStatus = () => {
     if (this.state.regStatus) {
       if(this.state.sessionDetails.sessionType == 'deepdive'){
@@ -361,17 +399,20 @@ getCurrentUser() {
             let RegSession = doc.data();
             let start = Moment(RegSession.session.startTime).format();
             let end = Moment(RegSession.session.endTime).format();
-            if ( baseObj.state.currentSessionStart <= start && end <= baseObj.state.currentSessionEnd && RegSession.sessionId !== baseObj.state.sessionId) {
-              baseObj.setState({
-                sameTimeRegistration: true
-              });
+            if(baseObj.state.sessionDetails.sessionType == 'deepdive'){
+              if ( baseObj.state.currentSessionStart <= start && end <= baseObj.state.currentSessionEnd && RegSession.sessionId !== baseObj.state.sessionId) {
+                baseObj.setState({
+                  sameTimeRegistration: true
+                });
+              }
+              else {
+                baseObj.setState({
+                  regStatus: "",
+                  regId: ""
+                })
+              }
             }
-            else {
-              baseObj.setState({
-                regStatus: "",
-                regId: ""
-              })
-            }
+            
           })  
       })
       .catch((error) => {

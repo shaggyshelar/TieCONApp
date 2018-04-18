@@ -312,7 +312,7 @@ export class QRScanner extends React.Component {
     db.collection("RegistrationResponse").where("sessionId", "==", selectedSessionId).get().then(function (querySnapshot) {
       querySnapshot.forEach(function (doc) {
         let sessionData = doc.data();
-        sessionUsers.push(sessionData.userId);
+        sessionUsers.push(sessionData.attendeeId);
       });
       thisRef.setState({ sessionUsers, isLoading: false });
     }).catch(function (error) {

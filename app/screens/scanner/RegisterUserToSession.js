@@ -197,52 +197,54 @@ export class RegisterUserToSession extends React.Component {
       .where("attendeeId", "==", attendeeId)
       .get()
       .then((snapshot) => {
+          let isAlreadyRegistered = false;
           snapshot.forEach(doc => {
             let RegSession = doc.data();
             let start = Moment(RegSession.session.startTime).format();
             let end = Moment(RegSession.session.endTime).format();
             if ( currentSessionStart <= start && end <= currentSessionEnd && RegSession.sessionId !== thisRef.state.sessionId) {
+              isAlreadyRegistered = true;
+            }
+          });
+          if(isAlreadyRegistered) {
+            Alert.alert(
+              'Error',
+              'This user is already registered for some other session for same time.',
+              [
+                { text: 'Ok', onPress: () => { } },
+              ],
+              { cancellable: false }
+            );
+          } else {
+            let attendRequest = {
+              sessionId: thisRef.state.selectedSession,
+              session: selectedSession,
+              registeredAt: new Date(),
+              status: selectedSession.sessionType == 'deepdive' ? 'De-Register' : 'Remove From Agenda',
+              attendee: {},
+              attendeeId: attendeeId,
+              sessionDate : selectedSession.startTime
+            };
+            firebase.firestore().collection("RegistrationResponse").add(attendRequest).then((req) => {
               Alert.alert(
-                'Error',
-                'This user is already registered for some other session for same time.',
+                'Registered',
+                'Registration successfull.',
                 [
                   { text: 'Ok', onPress: () => { } },
                 ],
                 { cancellable: false }
               );
-              return;
-            }
-            else {
-              let attendRequest = {
-                sessionId: thisRef.state.selectedSession,
-                session: selectedSession,
-                registeredAt: new Date(),
-                status: selectedSession.sessionType == 'deepdive' ? 'De-Register' : 'Remove From Agenda',
-                attendee: {},
-                attendeeId: attendeeId,
-                sessionDate : selectedSession.startTime
-              };
-              firebase.firestore().collection("RegistrationResponse").add(attendRequest).then((req) => {
-                Alert.alert(
-                  'Registered',
-                  'Registration successfull.',
-                  [
-                    { text: 'Ok', onPress: () => { } },
-                  ],
-                  { cancellable: false }
-                );
-              }).catch((error) => {
-                Alert.alert(
-                  'Error',
-                  'Error while registering user to selected session.',
-                  [
-                    { text: 'Ok', onPress: () => { } },
-                  ],
-                  { cancellable: false }
-                );
-              });
-            }
-          })  
+            }).catch((error) => {
+              Alert.alert(
+                'Error',
+                'Error while registering user to selected session.',
+                [
+                  { text: 'Ok', onPress: () => { } },
+                ],
+                { cancellable: false }
+              );
+            });
+          }
       })
       .catch((error) => {
         //console.warn(error);

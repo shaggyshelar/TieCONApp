@@ -236,13 +236,13 @@ export const MainRoutes = [
     children: [],
     roleNames: ['Admin', 'Volunteer']
   },
-  {
-    id: 'MyProfile',
-    title: 'My Profile',
-    icon: 'ios-person',
-    screen: Screens.ProfileSettings,
-    children: [],
-  },
+  // {
+  //   id: 'MyProfile',
+  //   title: 'My Profile',
+  //   icon: 'ios-person',
+  //   screen: Screens.ProfileSettings,
+  //   children: [],
+  // },
   {
     id: 'Speakers',
     title: 'Speakers',
@@ -251,20 +251,27 @@ export const MainRoutes = [
     children: []
   },
   {
+    id: 'Sponsors',
+    title: 'Sponsors',
+    icon: 'ios-people',
+    screen: Screens.Sponsors,
+    children: []
+  },
+   {
     id: 'VenueMap',
     title: 'Location Map',
     icon: 'md-navigate',
     screen: Screens.VenueMap,
     children: []
   },
-  {
-    id: 'HelpDesk',
-    title: 'Helpdesk',
-    icon: 'md-help',
-    screen: Screens.HelpDesk,
-    children: []
-  },
-  {
+   {
+     id: 'HelpDesk',
+     title: 'Helpdesk',
+     icon: 'md-help',
+     screen: Screens.HelpDesk,
+     children: []
+   },
+   {
     id: 'AboutUs',
     title: 'About Tie',
     icon: 'md-information-circle',

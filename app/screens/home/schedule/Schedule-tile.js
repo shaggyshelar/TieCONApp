@@ -19,21 +19,21 @@ export default class ScheduleTile extends RkComponent {
         this.styles = styleConstructor();
         let __props = this.props;
         __props.session.displayColor = '#ffffff';
-        switch(__props.session.sessionType){
+        switch (__props.session.sessionType) {
             case 'break': {
                 __props.session.displayColor = 'gray';
                 break;
             }
-            case 'keynote' :
+            case 'keynote':
                 __props.session.displayColor = 'green';
                 break;
-            case 'deepdive' :
+            case 'deepdive':
                 __props.session.displayColor = 'orange';
                 break;
-            case 'panel' :
+            case 'panel':
                 __props.session.displayColor = 'purple';
                 break;
-            case 'breakout' :
+            case 'breakout':
                 __props.session.displayColor = 'blue';
                 break;
         }
@@ -55,6 +55,7 @@ export default class ScheduleTile extends RkComponent {
     /**
      * Fetch Registration Status
      */
+
     fetchRegistrationStatus = () => {
         const baseObj = this;
         if (this.state.user) {
@@ -73,8 +74,8 @@ export default class ScheduleTile extends RkComponent {
                             }));
                         });
                     }
-                }, function(error){
-                     console.warn(error);
+                }, function (error) {
+                    console.warn(error);
                 });
         } else {
             //console.warn("User object is undefined");
@@ -84,21 +85,28 @@ export default class ScheduleTile extends RkComponent {
      * Fetch Speaker Details
      */
     fetchSpeakers = () => {
+        let speakerArray = [];
         if (this.props.session.speakers) {
-            this.props.session.speakers.forEach((speaker) => {
-                Service.getDocument("Attendee", speaker, (data) => {
-                    const prevSpeakersDetails = this.state.session.speakersDetails;
+            this.props.session.speakers.forEach((speaker, index) => {
+                Service.getDocument("Attendee", speaker, (data, id) => {
+                    data.id = id;
+                    //const prevSpeakersDetails = this.state.session.speakersDetails ? this.state.session.speakersDetails : {};
+                    speakerArray[index] = data;
+                    //const prevSpeakersDetails = this.state.session.speakersDetails;
                     let newSession = Object.assign(this.state.session, {
-                        speakersDetails: [
-                            ...prevSpeakersDetails,
-                            data
-                        ]
+                        speakersDetails: speakerArray
                     });
+                    // let newSession = Object.assign(this.state.session, {
+                    //     speakersDetails: [
+                    //         ...prevSpeakersDetails,
+                    //         data
+                    //     ]
+                    // });
                     this.setState((prevState) => ({
                         ...prevState,
                         session: newSession
                     }));
-                },function(error){
+                }, function (error) {
                     console.warn(error);
                 });
             });
@@ -175,8 +183,8 @@ export default class ScheduleTile extends RkComponent {
     getDuration = () => {
         return (
             <View style={{ flexDirection: 'row', alignSelf: 'flex-start' }}>
-                <Icon name="md-time" style={this.styles.tileIcons}  style={{color: '#5d5e5f', fontSize:16, marginTop:2,marginRight:5}}/>
-                <Text  style={this.styles.duration} style={{color: '#5d5e5f', fontSize:14}}>{Moment(this.props.session.startTime).format("HH:mm")} - {Moment(this.props.session.endTime).format("HH:mm")}</Text>
+                <Icon name="md-time" style={this.styles.tileIcons} style={{ color: '#5d5e5f', fontSize: 16, marginTop: 2, marginRight: 5 }} />
+                <Text style={this.styles.duration} style={{ color: '#5d5e5f', fontSize: 14 }}>{Moment(this.props.session.startTime).format("HH:mm")} - {Moment(this.props.session.endTime).format("HH:mm")}</Text>
             </View>
         );
     }
@@ -186,8 +194,8 @@ export default class ScheduleTile extends RkComponent {
     getLocation = () => {
         return (
             <View style={{ marginLeft: 20, flexDirection: 'row', alignSelf: 'flex-end' }}>
-                <Icon name="md-pin" style={this.styles.tileIcons} style={{color: '#5d5e5f', fontSize:16,  marginTop:2,marginRight:5}} />
-                <Text style={this.styles.roomName} style={{color: '#5d5e5f', fontSize:14}}>{this.props.session.room}</Text>
+                <Icon name="md-pin" style={this.styles.tileIcons} style={{ color: '#5d5e5f', fontSize: 16, marginTop: 2, marginRight: 5 }} />
+                <Text style={this.styles.roomName} style={{ color: '#5d5e5f', fontSize: 14 }}>{this.props.session.room}</Text>
             </View>
         );
     }
@@ -216,46 +224,45 @@ export default class ScheduleTile extends RkComponent {
         }
     }
 
-    applyTouchOpacity= (shouldApplyOpacity)=>
-    {
-        if (!shouldApplyOpacity)
-        {
+    applyTouchOpacity = (shouldApplyOpacity) => {
+        if (!shouldApplyOpacity) {
             return <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('SessionDetails', {session: this.props.session})}
-                            style={{
-                            flexDirection: 'row',
-                            flex: 3,
-                            }}>
-                            <Text style={{fontSize:16, fontWeight:'600',width:300}} numberOfLines = { 1 }>{this.props.session.eventName}</Text>
-                    </TouchableOpacity>;
-        }else {
-           return  <Text  style={{fontSize:16,fontWeight:'600', width:300}} numberOfLines = { 1 }>{this.props.session.eventName}</Text>;
+                onPress={() => this.props.navigation.navigate('SessionDetails', { session: this.props.session })}
+                style={{
+                    flexDirection: 'row',
+                    flex: 3,
+                }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>{this.props.session.eventName}</Text>
+            </TouchableOpacity>;
+        } else {
+            return <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>{this.props.session.eventName}</Text>;
         }
 
     }
-    applyTouchOpacityArrow = (shouldApplyOpacity)=>
-    {
-        if (!shouldApplyOpacity)
-        {
+    applyTouchOpacityArrow = (shouldApplyOpacity) => {
+        if (!shouldApplyOpacity) {
             return (
-            <View style={{ flexDirection: 'column', alignItems: 'flex-end' , flex:3  }}>
-                <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate('SessionDetails', { session: this.props.session })}
-                >
-                    <RkText style={{marginTop:5}}><Icon name="ios-arrow-forward" /></RkText>
-                </TouchableOpacity>
-            </View>
+                <View style={{ flexDirection: 'column', alignItems: 'flex-end', flex: 3 }}>
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('SessionDetails', { session: this.props.session })}
+                    >
+                        <RkText style={{ marginTop: 5 }}><Icon name="ios-arrow-forward" /></RkText>
+                    </TouchableOpacity>
+                </View>
             );
-        }else {
-           return <Text style={{fontSize:16, fontWeight:'600', width:300}} numberOfLines = { 1 }>   </Text>;
+        } else {
+            return <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>   </Text>;
         }
 
     }
-    checkDeepDiveSession = (session) =>{
-        if(session.sessionType == 'deepdive'){
-            return <Text style={this.styles.speaker} style={{ fontSize: 10 , color : 'red' }}>**Pre-registration required**</Text> ;
+    checkDeepDiveSession = (session) => {
+        if (session.sessionType == 'deepdive') {
+            return <Text style={this.styles.speaker} style={{ fontSize: 10, color: 'red' }}>**Pre-registration required**</Text>;
         }
-        else{
+        else if(session.sessionType == 'invite'){
+            return <Text style={this.styles.speaker} style={{ fontSize: 10, color: 'red' }}>**By invitation only**</Text>;            
+        }
+        else {
             return <View></View>;
         }
     }
@@ -265,11 +272,11 @@ export default class ScheduleTile extends RkComponent {
     render() {
         if (this.props.session) {
             return (
-                  <TouchableOpacity disabled={this.props.session.isBreak}
-                            onPress={() => this.props.navigation.navigate('SessionDetails', { session: this.props.session })}
-                  >
+                <TouchableOpacity disabled={this.props.session.isBreak}
+                    onPress={() => this.props.navigation.navigate('SessionDetails', { session: this.props.session })}
+                >
                     <RkCard rkType='shadowed' style={[this.styles.card, { borderLeftColor: this.props.session.displayColor }]}>
-                        <View style={this.styles.header} style={{height:30}}>
+                        <View style={this.styles.header} style={{ height: 30 }}>
                             <View style={this.styles.mainHeader} style={{ flexDirection: 'column', alignItems: 'flex-start', flex: 7 }}>
                                 {this.applyTouchOpacity(this.props.session.isBreak)}
                             </View>
@@ -278,7 +285,7 @@ export default class ScheduleTile extends RkComponent {
                             </View>
                         </View >
                         <View style={this.styles.content} >
-                        {/* {this.checkDeepDiveSession(this.props.session)} */}
+                            {/* {this.checkDeepDiveSession(this.props.session)} */}
                             <View style={this.styles.tileFooter}>
                                 {this.getDuration()}
                                 {this.getLocation()}

@@ -1,7 +1,9 @@
 import React from 'react';
-import { RkStyleSheet, RkText } from 'react-native-ui-kitten';
+import { RkCard, RkStyleSheet, RkText } from 'react-native-ui-kitten';
 import { Text, View, Container } from 'native-base';
 import { ScrollView,Platform,NetInfo, ActivityIndicator } from 'react-native';
+import Autolink from 'react-native-autolink';
+
 
 function renderIf(condition, content) {
   if (condition) {
@@ -75,7 +77,29 @@ export class HelpDesk extends React.Component {
         <ScrollView>
           <View>
             {/* {speakerTile} */}
-            <Text style={{ fontSize: 20 }}>Coming Soon</Text>
+            
+            <RkCard rkType='shadowed' style={[styles.card]}>
+           
+            <Text style={{ fontSize: 19, fontWeight: 'bold',marginBottom:6 }}>TiECon Support</Text> 
+            <Text style={{ fontSize: 16, color:'grey' }}>Phone: <Autolink text="+91-9673806519"></Autolink></Text>      
+            <Text style={{ fontSize: 16, color:'grey' }}>Email: <Autolink text="tieoffice.pune@gmail.com"></Autolink></Text> 
+           
+            </RkCard>
+
+            <RkCard rkType='shadowed' style={[styles.card]}>
+           
+            <Text style={{ fontSize: 19, fontWeight: 'bold',justifyContent: 'center', marginBottom:6}}>Technical Support</Text>
+            {/* <Text style={{ fontSize: 20 }}>Eternus Solutions Pvt. Ltd.</Text> */}
+            <Text style={{ fontSize: 16, color:'grey' }}>Phone: <Autolink text="+91-9168883355"></Autolink></Text> 
+            <Text style={{ fontSize: 16, color:'grey' }}>Email: <Autolink text="tieappsupport@eternussolutions.com"></Autolink></Text>          
+           
+            </RkCard>
+
+
+            <Text/>
+            <Text/>
+            
+                                                              
           </View>
         </ScrollView>
         <View style={styles.footerOffline}>
@@ -119,4 +143,9 @@ let styles = RkStyleSheet.create(theme => ({
     fontSize: 12,
     fontWeight: 'bold'
   },
+  card: {
+    margin: 2,
+    padding: 6,
+    justifyContent:'flex-start'
+}
 }));

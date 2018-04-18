@@ -20,7 +20,6 @@ export class SpeakerSessionList extends RkComponent {
 
   constructor(props) {
     super(props);
-
     this.state = Object.assign(props, {
       sessionList: [],
     });
@@ -39,8 +38,7 @@ export class SpeakerSessionList extends RkComponent {
           const session = request.data();
           let id = request.id;
           let { params } = this.props.navigation.state;
-          let speakersId = params.speakersId;
-          let speakerId = speakersId[0];
+          let speakerId = params.speakersId;
           if (request.data().speakers != undefined) {
             let speakerArray = request.data().speakers;
             let i;
@@ -55,6 +53,7 @@ export class SpeakerSessionList extends RkComponent {
                   endTime: session.endTime,
                   description: session.description,
                   speakersDetails: [],
+                  sessionType : session.sessionType
                 });
               }
             }
@@ -67,7 +66,7 @@ export class SpeakerSessionList extends RkComponent {
           sessionList: newSessions
         }));
       }, function (error) {
-        console.warn(error);
+        //console.warn(error);
       });
   }
 
@@ -95,7 +94,6 @@ export class SpeakerSessionList extends RkComponent {
         {sessionList}
       </View >
     );
-
   }
 }
 const styles = StyleSheet.create({

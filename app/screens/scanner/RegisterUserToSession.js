@@ -5,6 +5,7 @@ import { ScrollView, Platform, NetInfo, ActivityIndicator, View, Image, Alert, K
 import { GradientButton } from '../../components/gradientButton';
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import firebase from '../../config/firebase';
+import Moment from 'moment';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -166,23 +167,90 @@ export class RegisterUserToSession extends React.Component {
     );
   }
 
-  getSelectedUserUI = () => {
-    console.warn('caling');
+  getSelectedUserUI = (userDetails, callback) => {
     var db = firebase.firestore();
     db.collection("Attendee")
-    .where("attendeeLabel", "==", 'DEL')
-    .where("attendeeCount", "==", '0206')
-    .get()
-    .then(function(doc) {
-      let user = doc.data();
-      console.warn('Found ID', user);
-    })
-    .catch( function ( error){
-      console.warn("error", error);
-    });
+      // .where("attendeeLabel", "==", 'DEL')
+      // .where("attendeeCount", "==", '0206')
+      .where("attendeeLabel", "==", userDetails[0])
+      .where("attendeeCount", "==", userDetails[1])
+      .get()
+      .then(function (snapshot) {
+        let users = [];
+        snapshot.forEach((doc) => {
+          let user = doc.data();
+          user.id = doc.id;
+          users.push(user);
+        });
+        callback(users);
+      })
+      .catch(function (error) {
+        //console.warn("error", error);
+      });
+  }
+
+  checkAlreadyRegistered = (attendeeId, selectedSession ) => {
+    let thisRef = this;
+    let currentSessionStart = Moment(selectedSession.startTime).format();
+    let currentSessionEnd  = Moment(selectedSession.endTime).format();
+    firebase.firestore().collection("RegistrationResponse")
+      .where("attendeeId", "==", attendeeId)
+      .get()
+      .then((snapshot) => {
+          snapshot.forEach(doc => {
+            let RegSession = doc.data();
+            let start = Moment(RegSession.session.startTime).format();
+            let end = Moment(RegSession.session.endTime).format();
+            if ( currentSessionStart <= start && end <= currentSessionEnd && RegSession.sessionId !== thisRef.state.sessionId) {
+              Alert.alert(
+                'Error',
+                'This user is already registered for some other session for same time.',
+                [
+                  { text: 'Ok', onPress: () => { } },
+                ],
+                { cancellable: false }
+              );
+              return;
+            }
+            else {
+              let attendRequest = {
+                sessionId: thisRef.state.selectedSession,
+                session: selectedSession,
+                registeredAt: new Date(),
+                status: selectedSession.sessionType == 'deepdive' ? 'De-Register' : 'Remove From Agenda',
+                attendee: {},
+                attendeeId: attendeeId,
+                sessionDate : selectedSession.startTime
+              };
+              firebase.firestore().collection("RegistrationResponse").add(attendRequest).then((req) => {
+                Alert.alert(
+                  'Registered',
+                  'Registration successfull.',
+                  [
+                    { text: 'Ok', onPress: () => { } },
+                  ],
+                  { cancellable: false }
+                );
+              }).catch((error) => {
+                Alert.alert(
+                  'Error',
+                  'Error while registering user to selected session.',
+                  [
+                    { text: 'Ok', onPress: () => { } },
+                  ],
+                  { cancellable: false }
+                );
+              });
+            }
+          })  
+      })
+      .catch((error) => {
+        //console.warn(error);
+      })
   }
 
   onRegisterUserClick() {
+    let thisRef = this;
     if (!this.state.userId) {
       Alert.alert(
         'Invalid User ID',
@@ -202,17 +270,60 @@ export class RegisterUserToSession extends React.Component {
         { cancellable: false }
       );
     } else {
-      let selectedSession = this._getSelectedSession();
-      let message = 'User id=' + this.state.userId + ', SessionId= ' + this.state.selectedSession;
-      this.getSelectedUserUI();
-      Alert.alert(
-        'Good',
-        message,
-        [
-          { text: 'Ok', onPress: () => { } },
-        ],
-        { cancellable: false }
-      );
+      let parsedUserInfo = this.state.userId.split("-");
+      if (parsedUserInfo.length != 2) {
+        Alert.alert(
+          'Error',
+          'Invalid format of User ID. Proper format is \'Del-2002\'.',
+          [
+            { text: 'Ok', onPress: () => { } },
+          ],
+          { cancellable: false }
+        );
+        return;
+      } else {
+        let selectedSession = this._getSelectedSession();
+        let message = 'User id=' + this.state.userId + ', SessionId= ' + this.state.selectedSession;
+        this.getSelectedUserUI(parsedUserInfo, function (users) {
+          if (users.length > 0) {
+            let userInfo = users[0];
+            firebase.firestore().collection("RegistrationResponse")
+              .where("sessionId", "==", thisRef.state.selectedSession)
+              .where("attendeeId", "==", userInfo.id)
+              .get()
+              .then(function (snapshot) {
+                if (snapshot.size > 0) {
+                  // snapshot.forEach((doc) => {
+                  // });
+                  Alert.alert(
+                    'Already Registered',
+                    'This user is already registered for selected session.',
+                    [
+                      { text: 'Ok', onPress: () => { } },
+                    ],
+                    { cancellable: false }
+                  );
+                  return;
+                }
+                else {
+                  thisRef.checkAlreadyRegistered(userInfo.id, selectedSession);
+                }
+              }, function (error) {
+                console.log('Errorrrr', error);
+              });
+            
+          } else {
+            Alert.alert(
+              'Error',
+              'Invalid user ID. Please select valid user ID.',
+              [
+                { text: 'Ok', onPress: () => { } },
+              ],
+              { cancellable: false }
+            );
+          }
+        });
+      }
     }
   }
 

@@ -24,7 +24,7 @@ export class SessionDetails extends Component {
         speakers: this.sessionDetails.speakers,
         sessionId: this.props.navigation.state.params.session.key,
         user: "",
-        description: this.sessionDetails.description ? this.sessionDetails.description : "No details found...",
+        description: this.sessionDetails.description ? this.sessionDetails.description : this.sessionDetails.eventName,
         sessionName: this.sessionDetails.eventName,
         sesssionDuration: this.sessionDetails.duration,
         sessionVenue: this.sessionDetails.room ? this.sessionDetails.room : "TBD",
@@ -169,28 +169,29 @@ getCurrentUser() {
     return (<Text>{startTime} - {endTime} | {sessionDate} </Text>);
   }
   getSpeakers = () => {
-    console.log("Speakers", this.state.speakerDetails);
-    return this.state.speakerDetails
-      .map((speaker, index) => {
-        let avatar;
-        if (speaker.profileImageURL) {
-          avatar = <Avatar rkType='small' style={{width: 44,height: 44,borderRadius: 20}} imagePath={speaker.profileImageURL} />
-        } else {
-           avatar = <Image style={{width: 44,height: 44,borderRadius: 20}} source={require('../../../assets/images/defaultUserImg.png')}/>
-        }
-        return (
-          <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker,speakersId : this.state.speakers})}>
-            <View style={[styles.row, styles.heading, styles.speakerView]} >
-              {avatar}
-              <View style={styles.column}>
-                <RkText rkType='small'>{speaker.firstName + ' ' + speaker.lastName}</RkText>
-                <Text style={[styles.text, styles.speaker]} rkType='header6'>{speaker.briefInfo}</Text>
+    if (this.state.speakerDetails) {
+      return this.state.speakerDetails
+        .map((speaker, index) => {
+          let avatar;
+          if (speaker.profileImageURL) {
+            avatar = <Avatar rkType='small' style={{ width: 44, height: 44, borderRadius: 20 }} imagePath={speaker.profileImageURL} />
+          } else {
+            avatar = <Image style={{ width: 44, height: 44, borderRadius: 20 }} source={require('../../../assets/images/defaultUserImg.png')} />
+          }
+          return (
+            <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: speaker.id })}>
+              <View style={[styles.row, styles.heading, styles.speakerView]} >
+                {avatar}
+                <View style={styles.column}>
+                  <RkText rkType='small'>{speaker.firstName + ' ' + speaker.lastName}</RkText>
+                  <Text style={[styles.text, styles.speaker]} rkType='header6'>{speaker.briefInfo}</Text>
+                </View>
+                <RkText style={[styles.attendeeScreen]} ><Icon name="ios-arrow-forward" /></RkText>
               </View>
-              <RkText style={[styles.attendeeScreen]} ><Icon name="ios-arrow-forward" /></RkText>              
-            </View>
-          </TouchableOpacity>
-        )
-      });
+            </TouchableOpacity>
+          )
+        });
+    }
   }
 
   attendRequestStatus = () => {
@@ -221,6 +222,13 @@ getCurrentUser() {
           </View>
         )
       } 
+    }
+    else if(this.state.sessionDetails.sessionType == 'invite'){
+      return (
+        <View style = {[styles.attendBtn]} >
+          <RkText style={{ fontSize: 12 , color :'#f20505' }}>**By invitation only**</RkText>
+        </View>
+      );
     }
      else if(!this.state.regStatus  &&  this.state.sessionDetails.sessionType == 'deepdive'){
       return (
@@ -276,7 +284,7 @@ getCurrentUser() {
           sessionId: this.state.sessionDetails.key,
           session: this.state.sessionDetails,
           registeredAt: new Date(),
-          status: this.state.sessionDetails.isRegrequired ? "Pending" : "Remove From Agenda",
+          status: this.state.sessionDetails.sessionType == 'deepdive' ? 'De-Register' : 'Remove From Agenda',
           attendee: {},
           attendeeId: attendeeId,
           sessionDate : this.state.sessionDetails.startTime
@@ -372,8 +380,7 @@ getCurrentUser() {
   }
   render() {
     const speakers = this.getSpeakers();
-    
-    const displaySpeakers = (this.state.speakerDetails.length>0)? (
+    const displaySpeakers = (this.state.speakerDetails) ? (
         <View style={styles.speakerSection}>
               <View style={[styles.heading]}>
                 <View style={[styles.row]}>

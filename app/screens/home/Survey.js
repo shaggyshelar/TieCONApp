@@ -142,7 +142,7 @@ export class Survey extends RkComponent {
                         responses : [],
                         queArray : [],
                     })
-                    thisRef.props.navigation.pop();
+                    //thisRef.props.navigation.pop();
                     thisRef.props.navigation.navigate('SessionDetails',{session : thisRef.state.session});
                 })
                 .catch(function (error) {

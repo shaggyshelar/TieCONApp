@@ -109,7 +109,7 @@ export default class AskQuestion extends RkComponent {
                     Question: que,
                     askedBy: user,
                     SessionId: sessionId,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    timestamp: new Date(),
                     voters: [],
                     voteCount: 0
                 })
@@ -194,6 +194,7 @@ export default class AskQuestion extends RkComponent {
         );
     }
     checkLikeStatus = (question) => {
+        
         let thisRef = this;
         let votes = question.questionSet.voteCount;
         let votersList = question.questionSet.voters;
@@ -218,15 +219,28 @@ export default class AskQuestion extends RkComponent {
     }
 
     onLikeQuestion = (question) => {
+       let count = 0; 
+       question.questionSet.voters.forEach(
+            voter=>{
+              if(this.state.currentUid===voter)
+                count++;
+            }        
+        )
+        let voteCount;
+        if(count===0)
+        {
+            question.questionSet.voters.push(this.state.currentUid);
+            voteCount = question.questionSet.voters.length;
+        }
+        else
+         return;
+
         let thisRef = this;
-        let questionId = question.questionId;
-        let likedBy = question.questionSet.voters;
-        likedBy.push(this.state.currentUid);
-        let voteCount = likedBy.length;
+
         Service.getDocRef(questionTable)
-            .doc(questionId)
+            .doc(question.questionId)
             .update({
-                "voters": likedBy,
+                "voters": question.questionSet.voters,
                 "voteCount": voteCount
             })
             .then(function (dofRef) {

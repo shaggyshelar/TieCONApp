@@ -251,20 +251,27 @@ export const MainRoutes = [
     children: []
   },
   {
+    id: 'Sponsors',
+    title: 'Sponsors',
+    icon: 'ios-people',
+    screen: Screens.Sponsors,
+    children: []
+  },
+   {
     id: 'VenueMap',
     title: 'Location Map',
     icon: 'md-navigate',
     screen: Screens.VenueMap,
     children: []
   },
-  {
-    id: 'HelpDesk',
-    title: 'Helpdesk',
-    icon: 'md-help',
-    screen: Screens.HelpDesk,
-    children: []
-  },
-  {
+   {
+     id: 'HelpDesk',
+     title: 'Helpdesk',
+     icon: 'md-help',
+     screen: Screens.HelpDesk,
+     children: []
+   },
+   {
     id: 'AboutUs',
     title: 'About Tie',
     icon: 'md-information-circle',

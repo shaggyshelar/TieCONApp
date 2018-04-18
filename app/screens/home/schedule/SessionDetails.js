@@ -24,7 +24,7 @@ export class SessionDetails extends Component {
         speakers: this.sessionDetails.speakers,
         sessionId: this.props.navigation.state.params.session.key,
         user: "",
-        description: this.sessionDetails.description ? this.sessionDetails.description : "No details found...",
+        description: this.sessionDetails.description ? this.sessionDetails.description : this.sessionDetails.eventName,
         sessionName: this.sessionDetails.eventName,
         sesssionDuration: this.sessionDetails.duration,
         sessionVenue: this.sessionDetails.room ? this.sessionDetails.room : "TBD",
@@ -169,7 +169,6 @@ getCurrentUser() {
     return (<Text>{startTime} - {endTime} | {sessionDate} </Text>);
   }
   getSpeakers = () => {
-    console.log("Speakers", this.state.speakerDetails);
     return this.state.speakerDetails
       .map((speaker, index) => {
         let avatar;
@@ -179,7 +178,7 @@ getCurrentUser() {
            avatar = <Image style={{width: 44,height: 44,borderRadius: 20}} source={require('../../../assets/images/defaultUserImg.png')}/>
         }
         return (
-          <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker,speakersId : this.state.speakers})}>
+          <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker,speakersId :speaker.id})}>
             <View style={[styles.row, styles.heading, styles.speakerView]} >
               {avatar}
               <View style={styles.column}>
@@ -372,7 +371,6 @@ getCurrentUser() {
   }
   render() {
     const speakers = this.getSpeakers();
-    
     const displaySpeakers = (this.state.speakerDetails.length>0)? (
         <View style={styles.speakerSection}>
               <View style={[styles.heading]}>

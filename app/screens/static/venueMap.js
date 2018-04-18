@@ -1,13 +1,15 @@
 import React from 'react';
 import { RkStyleSheet, RkText } from 'react-native-ui-kitten';
 import { Text, View, Container } from 'native-base';
-import { ScrollView,Platform,NetInfo, ActivityIndicator } from 'react-native';
+import { ScrollView, Platform, NetInfo, ActivityIndicator, StyleSheet } from 'react-native';
+import MapView from 'react-native-maps';
+import { Marker } from 'react-native-maps';
 
 function renderIf(condition, content) {
   if (condition) {
-      return content;
+    return content;
   } else {
-      return null;
+    return null;
   }
 }
 
@@ -19,7 +21,13 @@ export class VenueMap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isOffline :false
+      isOffline: false,
+      initialRegion: {
+        latitude: 18.5392208,
+        longitude: 73.90626109999994,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421
+      }
     }
   }
 
@@ -72,29 +80,55 @@ export class VenueMap extends React.Component {
   render() {
     return (
       <Container style={[styles.root]}>
-        <ScrollView>
-          <View>
-            {/* {speakerTile} */}
-            <Text style={{ fontSize: 20 }}>Coming Soon</Text>
-          </View>
-        </ScrollView>
+        {/* <ScrollView>
+          <View> */}
+        {/* {speakerTile} */}
+        <Text style={{ fontSize: 15 }}>The Westin Pune Koregaon Park, 36/3-B, Mundhwa Rd, Pingale Wasti, Koregaon Park Annexe, Ghorpadi, Pune, Maharashtra 411001</Text>
+        <MapView style={styles1.map}
+          initialRegion={this.state.initialRegion}>
+          <Marker
+            coordinate={{latitude:18.5392208,longitude:73.90626109999994}}
+            title={'TiECon Pune 2018'}
+            description={'The Westin Pune Koregaon Park, 36/3-B, Mundhwa Rd, Pingale Wasti, Koregaon Park Annexe, Ghorpadi, Pune, Maharashtra 411001'}
+          />
+        </MapView>
+        {/* </View>
+        {</ScrollView>} */}
         <View style={styles.footerOffline}>
           {
             this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
           }
         </View>
-        <View style={styles.footer}>
+        {<View style={styles.footer}>
           <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
           <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
-        </View>
+        </View>}
       </Container>
     )
   }
 }
+const styles1 = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  map: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+});
 
 let styles = RkStyleSheet.create(theme => ({
   root: {
-      backgroundColor: theme.colors.screen.base
+    backgroundColor: theme.colors.screen.base,
   },
   footer: {
     flexDirection: 'row',

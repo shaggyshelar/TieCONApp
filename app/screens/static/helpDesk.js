@@ -2,6 +2,8 @@ import React from 'react';
 import { RkStyleSheet, RkText } from 'react-native-ui-kitten';
 import { Text, View, Container } from 'native-base';
 import { ScrollView,Platform,NetInfo, ActivityIndicator } from 'react-native';
+import Autolink from 'react-native-autolink';
+
 
 function renderIf(condition, content) {
   if (condition) {
@@ -75,7 +77,17 @@ export class HelpDesk extends React.Component {
         <ScrollView>
           <View>
             {/* {speakerTile} */}
-            <Text style={{ fontSize: 20 }}>Coming Soon</Text>
+            
+            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>TiECon support.</Text> 
+            <Text style={{ fontSize: 20 }}>Phone: <Autolink text="+91-9673806519"></Autolink></Text>      
+            <Text style={{ fontSize: 20 }}>Email: <Autolink text="tieoffice.pune@gmail.com"></Autolink></Text> 
+            <Text/>
+            <Text/>
+            <Text style={{ fontSize: 20, fontWeight: 'bold',justifyContent: 'center'}}>Technical Support</Text>
+            <Text style={{ fontSize: 20 }}>Eternus Solutions Pvt. Ltd.</Text>
+            <Text style={{ fontSize: 20 }}>Phone: <Autolink text="+91-9168883355"></Autolink></Text> 
+            <Text style={{ fontSize: 20 }}>Email: <Autolink text="tieoffice.pune@gmail.com"></Autolink></Text>          
+                                                              
           </View>
         </ScrollView>
         <View style={styles.footerOffline}>

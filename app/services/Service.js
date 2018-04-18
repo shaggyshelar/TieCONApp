@@ -33,7 +33,7 @@ export class Service {
             (snapshot)=>{
                 if(snapshot.exists){
                     let data = snapshot.data();
-                    successFn(data)
+                    successFn(data, snapshot.id)
                 }else{
                     successFn({});
                 }                

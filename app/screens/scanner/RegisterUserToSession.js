@@ -90,7 +90,7 @@ export class RegisterUserToSession extends React.Component {
       querySnapshot.forEach(function (doc) {
         let sessionData = doc.data();
         sessionData['id'] = doc.id;
-          sessionData['eventName'] = sessionData.eventName + '(' + sessionData.room + ')';
+          sessionData['eventName'] = sessionData.eventName;
           sessions.push(sessionData);
       });
 

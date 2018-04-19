@@ -355,7 +355,7 @@ export default class AskQuestion extends RkComponent {
     
                         {this.state.AskQFlag &&
                             <View style={{ flexDirection: 'row' }} pointerEvents={this.state.queAccess}>
-                                <RkTextInput type="text" style={{ width: 300,alignItems :'flex-start'  }} placeholder="Enter your question here..." value={this.state.Question} name="Question" onChangeText={(text) => this.onChangeInputText(text)} />
+                                <RkTextInput type="text" style={{ width: 300,alignItems :'flex-start'  }} placeholder="Enter your question here..." value={this.state.Question} name="Question" onChangeText={(text) => this.onChangeInputText(text)} maxLength = {250}/>
                                 <TouchableOpacity onPress={() => this.onSubmit()}>
                                 <RkText style={{ fontSize: 35, width: 46, height: 46,alignItems :'flex-end'}} ><Icon name="md-send" /> </RkText>
                                 </TouchableOpacity>

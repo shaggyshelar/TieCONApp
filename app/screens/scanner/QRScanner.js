@@ -305,13 +305,18 @@ export class QRScanner extends React.Component {
     let thisRef = this;
     let sessionUsers = [];
     var db = firebase.firestore();
-    db.collection("RegistrationResponse").where("sessionId", "==", selectedSessionId).get().then(function (querySnapshot) {
+    db.collection("RegistrationResponse")
+    .where("sessionId", "==", selectedSessionId)
+    .onSnapshot((querySnapshot) => {
+    // .get()
+    // .then(function (querySnapshot) {
       querySnapshot.forEach(function (doc) {
         let sessionData = doc.data();
         sessionUsers.push(sessionData.attendeeId);
+        //console.warn(sessionUsers);
       });
       thisRef.setState({ sessionUsers, isLoading: false });
-    }).catch(function (error) {
+    },function(error){
       thisRef.setState({ isLoading: false });
       Alert.alert(
         'Error',
@@ -321,7 +326,19 @@ export class QRScanner extends React.Component {
         ],
         { cancelable: false }
       );
-    });
+    })
+
+    // .catch(function (error) {
+    //   thisRef.setState({ isLoading: false });
+    //   Alert.alert(
+    //     'Error',
+    //     'Unable to get users for selected session. Please try again.',
+    //     [
+    //       { text: 'Ok', onPress: () => { } },
+    //     ],
+    //     { cancelable: false }
+    //   );
+    // });
   }
 
   subscribeToSessionUpdate(selectedSessionId) {

@@ -184,7 +184,10 @@ export class RegisterUserToSession extends React.Component {
         let users = [];
         snapshot.forEach((doc) => {
           let user = doc.data();
+          
           user.id = doc.id;
+          user.firstName = doc.data().firstName;
+          user.lastName = doc.data().lastName;
           users.push(user);
         });
         callback(users);
@@ -194,7 +197,7 @@ export class RegisterUserToSession extends React.Component {
       });
   }
 
-  checkAlreadyRegistered = (attendeeId, selectedSession ) => {
+  checkAlreadyRegistered = (attendeeObj, selectedSession ) => {
     this.setState({
       isLoading : true
     })
@@ -202,7 +205,7 @@ export class RegisterUserToSession extends React.Component {
     let currentSessionStart = Moment(selectedSession.startTime).format();
     let currentSessionEnd  = Moment(selectedSession.endTime).format();
     firebase.firestore().collection("RegistrationResponse")
-      .where("attendeeId", "==", attendeeId)
+      .where("attendeeId", "==", attendeeObj.id)
       .get()
       .then((snapshot) => {
           let isAlreadyRegistered = false;
@@ -240,13 +243,17 @@ export class RegisterUserToSession extends React.Component {
             else{
               selectedSession.speakersDetails = [];
             }
+            const firstName = attendeeObj.firstName;
+            const lastName = attendeeObj.lastName;
+            const email = attendeeObj.email;
+            
             let attendRequest = {
               sessionId: thisRef.state.selectedSession,
               session: selectedSession,
               registeredAt: new Date(),
               status: selectedSession.sessionType == 'deepdive' ? 'De-Register' : 'Remove From Agenda',
-              attendee: {},
-              attendeeId: attendeeId,
+              attendee: {firstName , lastName , email},
+              attendeeId: attendeeObj.id,
               sessionDate : selectedSession.startTime
             };
             firebase.firestore().collection("RegistrationResponse").add(attendRequest).then((req) => {
@@ -327,7 +334,7 @@ export class RegisterUserToSession extends React.Component {
                   return;
                 }
                 else {
-                  thisRef.checkAlreadyRegistered(userInfo.id, selectedSession);
+                  thisRef.checkAlreadyRegistered(userInfo, selectedSession);
                 }
               }, function (error) {
                 console.log('Errorrrr', error);

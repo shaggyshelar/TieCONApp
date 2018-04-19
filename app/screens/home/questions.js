@@ -22,7 +22,8 @@ export class Questions extends React.Component {
             userId: this.props.userId,
             responses : [],
             queArray : [],
-            isOffline :false
+            isOffline :false,
+            isLoading : true
         }
         this.onFormSelectValue = this.onFormSelectValue.bind(this);
         this.onMultiChoiceChange = this.onMultiChoiceChange.bind(this);
@@ -86,7 +87,8 @@ export class Questions extends React.Component {
             else{
                 let form = doc.data();
                 thisRef.setState({
-                    questionsForm: form.Questions
+                    questionsForm: form.Questions,
+                    isLoading :false
                 })
                 let questionSet = [];
                 form.Questions.forEach(question => {
@@ -112,6 +114,9 @@ export class Questions extends React.Component {
     }
 
     onSubmitResponse = () => {
+        this.setState({
+            isLoading : true
+        })
         let blankResponse = false;
         this.state.queArray.forEach(fItem => {
             if (fItem.Answer.size >= 1){
@@ -123,6 +128,9 @@ export class Questions extends React.Component {
         });
         if(blankResponse == true){
             Alert.alert("Please fill all the fields");
+            this.setState({
+                isLoading : false
+            })
         }
         else{
             let thisRef = this;
@@ -132,6 +140,9 @@ export class Questions extends React.Component {
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             })
             .then(function (docRef) {
+                thisRef.setState({
+                    isLoading : false
+                })
                 Alert.alert("Thanks for your response");
                 thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
             })
@@ -227,7 +238,7 @@ export class Questions extends React.Component {
         this.state.queArray[Qid].Answer = text;
     }
     render() {
-        if (this.state.questionsForm.length == 0 ){
+        if (this.state.isLoading == true ){
             return (
                 <Container style={[styles.screen]}>
                     <ScrollView>

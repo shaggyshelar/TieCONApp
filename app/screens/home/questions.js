@@ -127,10 +127,11 @@ export class Questions extends React.Component {
             }
         });
         if(blankResponse == true){
-            Alert.alert("Please fill all the fields");
             this.setState({
                 isLoading : false
             })
+            Alert.alert("Please fill all the fields");
+            
         }
         else{
             let thisRef = this;

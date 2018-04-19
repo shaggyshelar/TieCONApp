@@ -64,7 +64,7 @@ export class SideMenu extends React.Component {
         },
         { text: 'No', onPress: () => {} },
       ],
-      { cancellable: false }
+      { cancelable: false }
     );
   }
 

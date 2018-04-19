@@ -128,7 +128,7 @@ getCurrentUser() {
       [
         { text: 'Ok', onPress: () => {} },
       ],
-      { cancellable: false }
+      { cancelable: false }
     );
   }
 

@@ -46,7 +46,7 @@ export class SplashScreen extends React.Component {
                   [
                     { text: 'Ok', onPress: () => { } },
                   ],
-                  { cancellable: false }
+                  { cancelable: false }
                 );
                 let keysToRemove = ['USER_DETAILS', 'USER_LINKEDIN_TOKEN', 'SESSIONS'];
                 AsyncStorage.multiRemove(keysToRemove, (err) => {});
@@ -59,7 +59,7 @@ export class SplashScreen extends React.Component {
                 [
                   { text: 'Ok', onPress: () => { } },
                 ],
-                { cancellable: false }
+                { cancelable: false }
               );
               let keysToRemove = ['USER_DETAILS', 'USER_LINKEDIN_TOKEN', 'SESSIONS'];
               AsyncStorage.multiRemove(keysToRemove, (err) => {});

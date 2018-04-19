@@ -85,7 +85,7 @@ export class QRScanner extends React.Component {
         [
           { text: 'Ok', onPress: () => { } },
         ],
-        { cancellable: false }
+        { cancelable: false }
       );
     });
   }
@@ -192,7 +192,6 @@ export class QRScanner extends React.Component {
             [
               {
                 text: 'Yes', onPress: () => {
-                  //firestoreDB.collection('Attendance').doc(scannedData).add({
                   firestoreDB.collection('Attendance').add({
                     userId: scannedData,
                     userType: parsedUserInfo[0],
@@ -201,7 +200,6 @@ export class QRScanner extends React.Component {
                     session: selectedSession,
                     scannedBy: this.state.loggedInUser.uid,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                  //}, { merge: true })
                   })
                     .then((docRef) => {
                       this.setState({ isLoading: false });
@@ -215,7 +213,7 @@ export class QRScanner extends React.Component {
                         [
                           { text: 'Ok', onPress: () => { } },
                         ],
-                        { cancellable: false }
+                        { cancelable: false }
                       );
                     });
                 }
@@ -226,10 +224,9 @@ export class QRScanner extends React.Component {
                 }
               },
             ],
-            { cancellable: false }
+            { cancelable: false }
           );
         } else {
-          //firestoreDB.collection('Attendance').doc(scannedData).add({
           firestoreDB.collection('Attendance').add({
             userId: scannedData,
             userType: parsedUserInfo[0],
@@ -238,7 +235,6 @@ export class QRScanner extends React.Component {
             session: selectedSession,
             scannedBy: this.state.loggedInUser.uid,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
-          //}, { merge: true })
           })
             .then((docRef) => {
               this.setState({ isLoading: false });
@@ -252,7 +248,7 @@ export class QRScanner extends React.Component {
                 [
                   { text: 'Ok', onPress: () => { } },
                 ],
-                { cancellable: false }
+                { cancelable: false }
               );
             });
         }
@@ -278,7 +274,7 @@ export class QRScanner extends React.Component {
               }
             },
           ],
-          { cancellable: false }
+          { cancelable: false }
         );
       }
     } else {
@@ -293,7 +289,7 @@ export class QRScanner extends React.Component {
             }
           },
         ],
-        { cancellable: false }
+        { cancelable: false }
       );
     }
   }
@@ -323,7 +319,7 @@ export class QRScanner extends React.Component {
         [
           { text: 'Ok', onPress: () => { } },
         ],
-        { cancellable: false }
+        { cancelable: false }
       );
     });
   }
@@ -339,7 +335,7 @@ export class QRScanner extends React.Component {
       var attendance = [], delegateAttedance = 0, otherAttendance = 0;
       querySnapshot.forEach(function(doc) {
         let attendanceDetails = doc.data();
-        if(attendanceDetails.userLabel == "DEL"){
+        if(attendanceDetails.userType == "DEL"){
           delegateAttedance++;
         } else {
           otherAttendance++;

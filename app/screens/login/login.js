@@ -38,7 +38,7 @@ export class LoginV2 extends React.Component {
         [
           { text: 'Ok', onPress: () => {} },
         ],
-        { cancellable: false }
+        { cancelable: false }
       );
       return;
     }
@@ -50,7 +50,7 @@ export class LoginV2 extends React.Component {
         [
           { text: 'Ok', onPress: () => {} },
         ],
-        { cancellable: false }
+        { cancelable: false }
       );
       return;
     }
@@ -68,7 +68,7 @@ export class LoginV2 extends React.Component {
         [
           { text: 'Cancel', onPress: () => {} },
         ],
-        { cancellable: false }
+        { cancelable: false }
       );
 		});
   }

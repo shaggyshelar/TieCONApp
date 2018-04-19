@@ -139,7 +139,7 @@ export default class App extends React.Component {
       [
         { text: 'Ok', onPress: () => {} },
       ],
-      { cancellable: false }
+      { cancelable: false }
     );
   };
 

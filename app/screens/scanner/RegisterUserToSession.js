@@ -108,7 +108,7 @@ export class RegisterUserToSession extends React.Component {
         [
           { text: 'Ok', onPress: () => { } },
         ],
-        { cancellable: false }
+        { cancelable: false }
       );
     });
   }
@@ -224,7 +224,7 @@ export class RegisterUserToSession extends React.Component {
               [
                 { text: 'Ok', onPress: () => { } },
               ],
-              { cancellable: false }
+              { cancelable: false }
             );
           } else {
             if (selectedSession.description == undefined) {
@@ -259,7 +259,7 @@ export class RegisterUserToSession extends React.Component {
                 [
                   { text: 'Ok', onPress: () => { } },
                 ],
-                { cancellable: false }
+                { cancelable: false }
               );
             }).catch((error) => {
               Alert.alert(
@@ -268,7 +268,7 @@ export class RegisterUserToSession extends React.Component {
                 [
                   { text: 'Ok', onPress: () => { } },
                 ],
-                { cancellable: false }
+                { cancelable: false }
               );
             });
           }
@@ -287,7 +287,7 @@ export class RegisterUserToSession extends React.Component {
         [
           { text: 'Ok', onPress: () => { } },
         ],
-        { cancellable: false }
+        { cancelable: false }
       );
     } 
     else {
@@ -299,7 +299,7 @@ export class RegisterUserToSession extends React.Component {
           [
             { text: 'Ok', onPress: () => { } },
           ],
-          { cancellable: false }
+          { cancelable: false }
         );
         return;
       } else {
@@ -322,7 +322,7 @@ export class RegisterUserToSession extends React.Component {
                     [
                       { text: 'Ok', onPress: () => { } },
                     ],
-                    { cancellable: false }
+                    { cancelable: false }
                   );
                   return;
                 }
@@ -340,7 +340,7 @@ export class RegisterUserToSession extends React.Component {
               [
                 { text: 'Ok', onPress: () => { } },
               ],
-              { cancellable: false }
+              { cancelable: false }
             );
           }
         });

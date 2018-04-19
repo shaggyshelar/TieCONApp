@@ -245,12 +245,14 @@ export class RegisterUserToSession extends React.Component {
             }
             const firstName = attendeeObj.firstName;
             const lastName = attendeeObj.lastName;
+            const email = attendeeObj.email;
+            
             let attendRequest = {
               sessionId: thisRef.state.selectedSession,
               session: selectedSession,
               registeredAt: new Date(),
               status: selectedSession.sessionType == 'deepdive' ? 'De-Register' : 'Remove From Agenda',
-              attendee: {firstName , lastName},
+              attendee: {firstName , lastName , email},
               attendeeId: attendeeObj.id,
               sessionDate : selectedSession.startTime
             };

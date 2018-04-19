@@ -24,7 +24,8 @@ export class Survey extends RkComponent {
             queArray : [],
            sessionId : this.props.navigation.state.params.sessionDetails.key,
            session :this.props.navigation.state.params.sessionDetails,
-           isOffline : false
+           isOffline : false,
+           isLoading : true
         }
         this.onFormSelectValue = this.onFormSelectValue.bind(this);
         this.onMultiChoiceChange = this.onMultiChoiceChange.bind(this);
@@ -101,7 +102,8 @@ export class Survey extends RkComponent {
             else{
                 let form = doc.data();
                 thisRef.setState({
-                    questionsForm: form.Questions
+                    questionsForm: form.Questions,
+                    isLoading :false
                 })
                 let questionSet = [];
                 form.Questions.forEach(question => {
@@ -109,6 +111,7 @@ export class Survey extends RkComponent {
                 })
                 thisRef.setState({
                     queArray: questionSet
+
                 })
            }
         }).catch(function (error) {
@@ -116,6 +119,9 @@ export class Survey extends RkComponent {
         });
     }
     onSubmitResponse = () => {
+        this.setState({
+            isLoading :true
+        })
         let blankResponse = false;
         this.state.queArray.forEach(fItem => {
             if (fItem.Answer.size >= 1){
@@ -126,6 +132,9 @@ export class Survey extends RkComponent {
             }       
         })
         if (blankResponse == true) {
+            this.setState({
+                isLoading :false
+            })
             Alert.alert("Please fill all the fields");
         }
         else {
@@ -141,8 +150,9 @@ export class Survey extends RkComponent {
                     thisRef.setState({
                         responses : [],
                         queArray : [],
+                        isLoading : false
                     })
-                    //thisRef.props.navigation.pop();
+                    thisRef.props.navigation.pop();
                     thisRef.props.navigation.navigate('SessionDetails',{session : thisRef.state.session});
                 })
                 .catch(function (error) {
@@ -243,7 +253,7 @@ export class Survey extends RkComponent {
         this.state.queArray[Qid].Answer = text;
     }
     render() {
-        if (this.state.questionsForm.length == 0 ){
+        if (this.state.isLoading == true){
             return (
                 <Container style={[styles.screen]}>
                     <ScrollView>

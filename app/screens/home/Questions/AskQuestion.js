@@ -300,15 +300,15 @@ export default class AskQuestion extends RkComponent {
                 <View>
                     <View style={{ alignItems: 'center', flexDirection: 'row', width: Platform.OS === 'ios' ? 320 : 380, marginBottom: 3, marginLeft: 2, marginRight: 2 }}>
                         <View style={{ width: Platform.OS === 'ios' ? 160 : 180 }} >
-                            <GradientButton colors={['#f20505', '#f55050']} text='Recent Questions'
-                                contentStyle={{ fontSize: 18 }}
+                            <GradientButton colors={['#f20505', '#f55050']} text='Recent'
+                                contentStyle={{ fontSize: 12 }}
                                 style={{ fontSize: 15, flexDirection: 'row', width: Platform.OS === 'ios' ? 150 : 170, marginLeft: 2, marginRight: 1 }}
                                 onPress={this.onRecentQueSelect}
                             />
                         </View>
                         <View style={{ width: Platform.OS === 'ios' ? 160 : 180 }} >
-                            <GradientButton colors={['#f20505', '#f55050']} text='Top Questions'
-                                contentStyle={{ fontSize: 18 }}
+                            <GradientButton colors={['#f20505', '#f55050']} text='Top'
+                                contentStyle={{ fontSize: 12 }}
                                 style={{ fontSize: 15, flexDirection: 'row', width: Platform.OS === 'ios' ? 150 : 170, marginLeft: 1, marginRight: 2 }}
                                 onPress={this.onTopQueSelect}
                             />

@@ -198,6 +198,8 @@ export class QRScanner extends React.Component {
                     userLabel: userInfo,
                     sessionId: this.state.selectedSession,
                     session: selectedSession,
+                    userName: '',
+                    userRole: '',
                     scannedBy: this.state.loggedInUser.uid,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                   })
@@ -233,6 +235,8 @@ export class QRScanner extends React.Component {
             userLabel: userInfo,
             sessionId: this.state.selectedSession,
             session: selectedSession,
+            userName: '',
+            userRole: '',
             scannedBy: this.state.loggedInUser.uid,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
           })
